@@ -16,6 +16,16 @@
 #include "include/xargon.h"
 #include "include/x_snd.h"
 
+
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#ifndef max
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+
 //byte updtab [boardxs][20];			// refresh (0) only
 
 void init_objs (void) {				// Not to be confused with zapobjs()
@@ -383,8 +393,9 @@ void refresh (int pgmode) {
 	if (pl.ouched>=2) {
 		for (c=207; c<234; c++) {				// change all red to max
 			setcolor (c,63,vgapal[c*3+1],vgapal[c*3+2]);
+			flush_staged_palette_changes();
 			};
-		setcolor (0,63,0,0); pl.ouched--; statmodflg|=mod_screen;
+		setcolor (0,63,0,0); flush_staged_palette_changes(); pl.ouched--; statmodflg|=mod_screen;
 		}
 	else if (pl.ouched<=-2) {
 //		for (c=207; c<234; c++) {				// change all green to max
@@ -392,6 +403,7 @@ void refresh (int pgmode) {
 //			};
 		for (c=207; c<234; c++) {				// change all blue to max
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],63);
+			flush_staged_palette_changes();
 			};
 		pl.ouched++; statmodflg|=mod_screen;
 		};

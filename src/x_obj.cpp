@@ -1543,7 +1543,8 @@ int msg_boulder (int n, int msg, int z) {
 				if (pobj->yd!=0) snd_play (2,snd_bouldland);
 				pobj->yd=0;
 				if (pobj->xd==0) {
-					seekplayer (n,&pobj->xd,&pobj->yd);
+					//seekplayer (n,&pobj->xd,&pobj->yd);
+					{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 					pobj->xd*=4;
 					};
 				pobj->counter=(pobj->counter+((pobj->xd>0)?1:-1))&3;
@@ -1799,11 +1800,11 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 				pobj->statecount=0;
 				if (pobj->substate==0) {
 					pobj->substate=1;
-					setcolor (249,32,0,0);
+					setcolor (249,32,0,0); flush_staged_palette_changes();
 					if (invcount(inv_invin)) {
 						for (c=207; c<234; c++) {	// change all blue to max
 							setcolor (c,vgapal[c*3+0],vgapal[c*3+1],63);
-							};
+							}; flush_staged_palette_changes();
 						if (pobj->info1++>=30) {
 							pobj->info1=0; takeinv(inv_invin);
 							pl.ouched=-1; statmodflg|=mod_screen;
@@ -1812,18 +1813,20 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 					else if (pl.health==1) {
 						for (c=207; c<234; c++) {	// change all red to max
 							setcolor (c,63,vgapal[c*3+1],vgapal[c*3+2]);
-							};
+							}; flush_staged_palette_changes();
 						}
-					else if (invcount(inv_jump)) setcolor (233,0,15,52);
+					else if (invcount(inv_jump)) setcolor (233,0,15,52); flush_staged_palette_changes();
 					}
 				else {
 					pobj->substate=0;
 					setcolor (249,60,0,0);
+					flush_staged_palette_changes();
 					if ((pobj->info1>0)||(pl.health==1)) {
 						pl.ouched=-1; statmodflg|=mod_screen;
 						}
 					else if (invcount(inv_jump))
 						setcolor (233,8,8,8);		// change boots back to normal
+						flush_staged_palette_changes();
 					};
 				};
 			switch (pobj->counter) {
@@ -1831,92 +1834,101 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 					for (c=234; c<236; c++) {		// mines, xargbots
 						q=234+(((c+gamecount)&3)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						};
+						}; flush_staged_palette_changes();
 					for (c=236; c<240; c++) {		// S.U.P., turret, factory
 						q=236+(((c+gamecount)&7)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; break;
+						}; flush_staged_palette_changes(); break;
 				case 1:									// for underwater only
 					for (c=240; c<248; c++) {		// waterfalls, dungeon
 						q=240+((c+gamecount)&7);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						};
+						}; flush_staged_palette_changes();
 					for (c=234; c<236; c++) {		// mines, xargbots
 						q=234+(((c+gamecount)&3)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						};
+						}; flush_staged_palette_changes();
 					for (c=236; c<240; c++) {		// S.U.P., turret, factory
 						q=236+(((c+gamecount)&7)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; break;
+						}; flush_staged_palette_changes(); break;
 				case 2:									// levels with lava only
+					flush_staged_palette_changes();
 					for (c=192; c<200; c++) {		// flowing lava
 						q=192+((c+gamecount)&7);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						};
+						}; flush_staged_palette_changes();
 					for (c=234; c<236; c++) {		// mines, xargbots
 						q=234+(((c+gamecount)&3)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						};
+						}; flush_staged_palette_changes();
 					for (c=236; c<240; c++) {		// S.U.P., turret, factory
 						q=236+(((c+gamecount)&7)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; break;
+						}; flush_staged_palette_changes(); break;
 				case 3: upd_colors ();				// updates all colors
 				};
 			if (pobj->state==-1) return (0);
 			switch (pobj->state) {
 				case 0: setcolor (250,0,0,0);			 		// black sky
-					setcolor (251,0,0,0); pobj->state=-1; break;
+					setcolor (251,0,0,0); pobj->state=-1; flush_staged_palette_changes(); break;
 				case 1:									// simulate lightning
 					if (xr_random (25)==0) {
 						pobj->zaphold=3;
 						setcolor (250,60,60,63);
-						if (pobj->xd==0) setcolor (251,60,60,63);
+					  flush_staged_palette_changes();
+						if (pobj->xd==0) setcolor (251,60,60,63); flush_staged_palette_changes();
 //						snd_play (2,snd_thunder1+xr_random(3));
 						};
 					if (pobj->zaphold==0) {
 						pobj->zaphold=-1;
-						setcolor (250,0,0,0); setcolor (251,0,0,0);
+						setcolor (250,0,0,0); setcolor (251,0,0,0); flush_staged_palette_changes();
 						}; break;
-				case 2: setcolor (250,0,0,32);		 		// dk. blue sky
-					if (pobj->xd==0) setcolor (251,0,0,32); break;
+				case 2: setcolor (250,0,0,32); flush_staged_palette_changes(); // dk. blue sky
+					if (pobj->xd==0) setcolor (251,0,0,32); flush_staged_palette_changes(); break;
 				case 3:												// lt. blue sky
 					setcolor (176,8,16,25); setcolor (177,8,20,29);
 					setcolor (178,12,24,33); setcolor (179,16,28,41);
 					setcolor (180,20,32,45); setcolor (181,24,40,49);
 					setcolor (182,28,44,57); setcolor (183,36,48,60);
-					if (pobj->yd==0) setcolor (250,36,48,60);
-					if (pobj->xd==0) setcolor (251,36,48,60); break;
+					flush_staged_palette_changes();
+					if (pobj->yd==0) setcolor (250,36,48,60); flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,36,48,60); flush_staged_palette_changes(); break;
 				case 4:												// yellow sky
 					setcolor (176,32,0,0); setcolor (177,40,0,0);
 					setcolor (178,52,0,0); setcolor (179,60,0,0);
 					setcolor (180,60,28,0); setcolor (181,60,40,0);
 					setcolor (182,60,52,0); setcolor (183,60,60,0);
-					if (pobj->yd==0) setcolor (250,60,60,0);
-					if (pobj->xd==0) setcolor (251,60,60,0); break;
+					flush_staged_palette_changes();
+					if (pobj->yd==0) setcolor (250,60,60,0); flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,60,60,0); flush_staged_palette_changes(); break;
 				case 5:												// emerald sky
 					setcolor (176,0,12,12); setcolor (177,0,18,17);
 					setcolor (178,0,25,23); setcolor (179,0,32,27);
 					setcolor (180,0,39,32); setcolor (181,0,46,35);
 					setcolor (182,0,53,38); setcolor (183,0,60,40);
-					if (pobj->yd==0) setcolor (250,0,60,40);
-					if (pobj->xd==0) setcolor (251,0,60,40); break;
-				case 6: setcolor (250,32,32,24);				// olive green
-					if (pobj->xd==0) setcolor (251,32,32,24); break;
+					flush_staged_palette_changes();
+					if (pobj->yd==0) setcolor (250,0,60,40); flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,0,60,40); flush_staged_palette_changes(); break;
+				case 6: setcolor (250,32,32,24); flush_staged_palette_changes(); // olive green
+					if (pobj->xd==0) setcolor (251,32,32,24); flush_staged_palette_changes(); break;
 				case 7:												// violet sky
 					setcolor (176,13,5,22); setcolor (177,18,8,27);
 					setcolor (178,23,13,33); setcolor (179,29,19,39);
 					setcolor (180,35,25,45); setcolor (181,42,32,51);
 					setcolor (182,49,40,57); setcolor (183,57,50,63);
-					if (pobj->yd==0) setcolor (250,57,50,63);
-					if (pobj->xd==0) setcolor (251,57,50,63); break;
+					flush_staged_palette_changes();
+					if (pobj->yd==0) setcolor (250,57,50,63); flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,57,50,63); flush_staged_palette_changes(); break;
 				case 8: setcolor (250,23,23,23);				// factory grey
-					if (pobj->xd==0) setcolor (251,23,23,23); break;
+					flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,23,23,23); flush_staged_palette_changes(); break;
 				case 9: setcolor (250,12,23,63);		 		// royal blue
-					if (pobj->xd==0) setcolor (251,12,23,63); break;
+					flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,12,23,63); flush_staged_palette_changes(); break;
 				case 10: setcolor (250,20,20,23);			// factory grey v3
-					if (pobj->xd==0) setcolor (251,20,20,23); break;
+					flush_staged_palette_changes();
+					if (pobj->xd==0) setcolor (251,20,20,23); flush_staged_palette_changes(); break;
 				}; if (pobj->state>1) pobj->state=-1; break;
 		case msg_draw:
 			if (designflag) drawshape (&gamevp,0x017e,pobj->x+4,pobj->y+4);
@@ -1984,7 +1996,7 @@ int msg_front (int n, int msg, int z) {
 			if (pobj->info1>=40) {						// reactor destroyed
 				pobj->substate=(pobj->substate+1)&7;
 				if (pobj->substate==0) dim(); else undim();
-				if (pobj->counter==2) setcolor (250,20,20,23);
+				if (pobj->counter==2) setcolor (250,20,20,23); flush_staged_palette_changes();
 				explode1 (pobj->x+xr_random(36+((pobj->state==14)?20:0)),
 					pobj->y+xr_random(36+((pobj->state==14)?20:0)),1,1);
 				explode1 (pobj->x+xr_random(36+((pobj->state==14)?20:0)),
@@ -2026,6 +2038,7 @@ int msg_front (int n, int msg, int z) {
 						setcolor (162,23,13,33); setcolor (163,29,19,39);
 						setcolor (164,35,25,45); setcolor (165,42,32,51);
 						setcolor (166,49,40,57); setcolor (167,57,50,63);
+						flush_staged_palette_changes();
 						sendtrig (pobj->counter,msg_trigger,n);
 						snd_play (5,snd_enemykill1); killobj (n);
 						objs[0].state=st_stand;
@@ -2165,13 +2178,13 @@ int msg_turret (int n, int msg, int z) {
 			if (pobj->statecount==32) {
 				for (c=168; c<172; c++) {				// change all blue to max
 					setcolor (c,vgapal[c*3+0],vgapal[c*3+1],63);
-					};
+					}; flush_staged_palette_changes();
 				};
 			if (pobj->statecount==36) {
 				pobj->statecount=0;
 				for (c=168; c<172; c++) {				// change turret to normal
 					setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-					};
+					}; flush_staged_palette_changes();
 				switch (pobj->xd) {
 					case -2: newx=pobj->x+1; newy=pobj->y+6; break;
 					case -1: newx=pobj->x+5; newy=pobj->y+9; break;

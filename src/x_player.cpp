@@ -16,6 +16,16 @@
 #include "include/xargon.h"
 #include "include/x_snd.h"
 
+
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#ifndef max
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+
 extern char *fidgetmsg[4];
 /*int fidgetseq[4][4]={
 	{0x0a,0x0a,0x0a,0x0a},
@@ -584,7 +594,7 @@ int playerxfm (int xfmto) {
 		case inv_fish: newobj=obj_heroswim; break;
 		};
 
-	if (obj0->objkind==newobj) return;
+	if (obj0->objkind==newobj) return 0;
 	obj0->objkind=newobj;
 	obj0->xl=kindxl[newobj];
 	obj0->yl=kindyl[newobj];
@@ -613,5 +623,5 @@ int playerxfm (int xfmto) {
 		obj0->objkind=oldobj;
 		obj0->xl=oldxl;
 		obj0->yl=oldyl;
-		}; return;
+		}; return 0;
 	};

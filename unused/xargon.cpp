@@ -1096,7 +1096,7 @@ void gamemenu (void) {
 				pageflip(); setpagemode(0); fadein();
 				}
 			else done=1;
-			}                                   
+			}
 		else if (key=='I') {dotextmsg(1,0); done=1;}
 		else if (key=='A') {										// INVENTORY
 			setpagemode(0); inv_win(); done=1;

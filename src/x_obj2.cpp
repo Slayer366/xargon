@@ -38,7 +38,8 @@ int msg_grunt (int n, int msg, int z) {
 				pobj->xd=0; snd_play (2,snd_grunt);
 				};
 			if (xr_random(15)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 				pobj->xd*=4;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd; return (1);
@@ -109,7 +110,7 @@ int msg_centipede (int n, int msg, int z) {
 	switch (msg) {
 		case msg_update:
 			if (++pobj->counter>=12) pobj->counter=0;
-			if (xr_random(30)==0) seekplayer (n,&pobj->xd,0);
+			if (xr_random(30)==0) /*seekplayer (n,&pobj->xd,0)*/ { int16_t _tmp_xd; seekplayer(n, &_tmp_xd, nullptr); pobj->xd = _tmp_xd; };
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd;
 			return(1);
 		case msg_draw:
@@ -175,7 +176,8 @@ int msg_alien (int n, int msg, int z) {
 			if (pobj->xd!=0) pobj->substate=pobj->xd;
 			if (xr_random(20)==0) pobj->xd=(pobj->xd>0)?0:pobj->substate;
 			if (xr_random(15)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 				pobj->xd*=4;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd; return (1);
@@ -211,7 +213,9 @@ int msg_leech (int n, int msg, int z) {
 				pobj->xd=0; pobj->statecount=2; return (0);
 				};
 			if (xr_random(40)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd); pobj->xd*=4;
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
+				pobj->xd*=4;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd; return (1);
 		case msg_draw:
@@ -252,7 +256,9 @@ int msg_troll (int n, int msg, int z) {
 			if (++pobj->counter>=32) pobj->counter=0;
 			if ((pobj->counter&1)!=0) return (0);
 			if (xr_random(20)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);	pobj->xd*=4;
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
+				pobj->xd*=4;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd;
 			if ((xr_random(30)==0)&&(pobj->xd!=0)) {
@@ -342,7 +348,9 @@ int msg_lizard (int n, int msg, int z) {
 		case msg_update:
 			pobj->counter=(pobj->counter+1)&7;
 			if (xr_random(20)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);	pobj->xd*=2;
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
+				pobj->xd*=2;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd;
 			if ((xr_random(55)==0)&&(pobj->xd!=0)) {
@@ -378,7 +386,8 @@ int msg_xargbot (int n, int msg, int z) {
 					}; return (1);
 				};
 			if (xr_random(15)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 				pobj->yd*=4; pobj->xd*=2;
 				};
 			if (!justmove(n,pobj->x+pobj->xd,pobj->y))
@@ -431,7 +440,9 @@ int msg_krusty (int n, int msg, int z) {
 				};
 			if (++pobj->counter>=12) pobj->counter=0;
 			if (xr_random(30)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd); pobj->yd=0;
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
+				pobj->yd=0;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd;
 			if (xr_random(12)==0)
@@ -466,7 +477,8 @@ int msg_ghoul (int n, int msg, int z) {
 			if (pobj->statecount>0) pobj->statecount--;
 			if (!justmove(n,pobj->x,pobj->y+pobj->yd)) pobj->yd=-pobj->yd;
 			if (xr_random(20)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 				pobj->xd*=2; pobj->yd*=2;
 				};
 			if (!justmove(n,pobj->x+pobj->xd,pobj->y))
@@ -644,7 +656,7 @@ int msg_creeper (int n, int msg, int z) {
 				return (1);
 				};
 			if (++pobj->counter>=12) pobj->counter=0;
-			if (xr_random(30)==0) seekplayer (n,&pobj->xd,&pobj->yd);
+			if (xr_random(30)==0) /*seekplayer (n,&pobj->xd,&pobj->yd)*/ { int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; };
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd; return (1);
 		case msg_draw:
 			if (pobj->state>=3) {
@@ -682,7 +694,8 @@ int msg_bee (int n, int msg, int z) {
 			if (xr_random(20)==0) pobj->xd=(pobj->xd>0)?0:pobj->substate;
 			if (xr_random(40)==0) {
 				snd_play (1,snd_bee);
-				seekplayer (n,&pobj->xd,&pobj->yd);
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 				pobj->xd*=4; pobj->yd*=2;
 				};
 			if (!justmove(n,pobj->x+pobj->xd,pobj->y)) pobj->xd=-pobj->xd;
@@ -750,7 +763,8 @@ int msg_spider (int n, int msg, int z) {
 				killobj (n);
 				};
 			if (xr_random(40)==0) {
-				snd_play (2,snd_spider); seekplayer (n,&pobj->xd,&pobj->yd);
+				snd_play (2,snd_spider); // seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd; return (1);
 		case msg_draw:
@@ -815,7 +829,9 @@ int msg_robot (int n, int msg, int z) {
 			if (++pobj->counter>=16) pobj->counter=0;
 			if ((pobj->counter&1)!=0) return (0);
 			if (xr_random(40)==0) {
-				seekplayer (n,&pobj->xd,&pobj->yd);	pobj->xd*=4;
+				//seekplayer (n,&pobj->xd,&pobj->yd);
+				{ int16_t _tmp_xd, _tmp_yd; seekplayer(n, &_tmp_xd, &_tmp_yd); pobj->xd = _tmp_xd; pobj->yd = _tmp_yd; }
+				pobj->xd*=4;
 				};
 			if (!crawl (n,pobj->xd,0)) pobj->xd=-pobj->xd;
 			if ((xr_random(50)==0)&&(pobj->xd!=0)) {
@@ -910,7 +926,9 @@ int msg_xargon (int n, int msg, int z) {
 					}; return (1);
 				};
 			if (xr_random(20)==0) {
-				seekplayer (n,&pobj->xd,0); pobj->xd*=4;
+				//seekplayer (n,&pobj->xd,0);
+				{ int16_t _tmp_xd; seekplayer(n, &_tmp_xd, nullptr); pobj->xd = _tmp_xd; }
+				pobj->xd*=4;
 				};
 			dist=vectdist(n,0);
 			if ((dist<80)&&(pobj->xd<0)) pobj->xd=-pobj->xd;

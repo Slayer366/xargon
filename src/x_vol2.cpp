@@ -30,7 +30,7 @@ char *demoname[1]={"demo_mac.xr0"};
 
 char v_msg[]="VOLUME TWO --- The Secret Chamber";
 
-char *fidgetmsg[4]={"Apogee never made games this fun","I can't imagine anyone being bored playing this","Don't just stand there looking stupid","Come on Malvineous get moving"};
+char *fidgetmsg[4]={"Apogee never made games this fun","I can't imagine anyone being bored playing this","Don't just stand there looking stupid","Come on Malvineous, get moving"};
 
 char *leveltxt[16]={
 	"Malvineous returns\r\rto the safety of\r\rthe map level\r",
@@ -72,5 +72,6 @@ void wait (void) {
 			q=64+((c+gamecount)&15);
 			setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
 			};
+		flush_staged_palette_changes();
 		} while ((key==0)&&(fire1==0)&&(fire2==0)&&(dx1==0)&&(dy1==0));
 	};

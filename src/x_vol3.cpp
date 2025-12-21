@@ -72,5 +72,6 @@ void wait (void) {
 			q=64+((c+gamecount)&15);
 			setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
 			};
+		flush_staged_palette_changes();
 		} while ((key==0)&&(fire1==0)&&(fire2==0)&&(dx1==0)&&(dy1==0));
 	};

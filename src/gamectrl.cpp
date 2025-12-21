@@ -144,7 +144,7 @@ getNextEvent:
 	if (SDL_PollEvent(&event)) {
 		//key=k_read();
 		//if ((key==0)|(key==1)|(key==2)) key=k_read();
-		int newkey, newscan = 0;
+		int newkey = 0, newscan = 0;
 		switch (event.type) {
 			case SDL_KEYUP:
 			case SDL_KEYDOWN:
@@ -203,7 +203,7 @@ getNextEvent:
 		};
 	k_status();
 	fire1=k_shift;
-	fire2=k_alt|k_ctrl;
+	fire2=k_alt|k_ctrl|keydown[0][scan_ctrl];
 	if (((dx1==0)&&(dy1==0))&&(joyflag)) {
 		readjoy (&x1,&y1);
 		xs=(x1-joyxc);
@@ -277,7 +277,7 @@ void playmac (char *fname) {
 	machand=_open(fname,O_BINARY);
 	if (machand>=0) {
 		maclen=filelength (machand);
-		macptr=malloc (maclen);
+		macptr=(char*)malloc (maclen);
 		if (macptr==NULL) macptr=NULL;
 		else if (_read (machand,macptr,maclen)>=0) {
 			macplay=1;
@@ -292,7 +292,7 @@ void playmac (char *fname) {
 
 void recordmac (char *fname) {
 	stopmac();
-	macptr=malloc (8000);
+	macptr=(char*)malloc (8000);
 	if (macptr!=NULL) {
 		macofs=0;
 		macrecord=1;
@@ -305,9 +305,9 @@ void macrecend (void) {
 	int machand;
 
 	if (!macrecord) return;
-	machand=_creat (macfname,0);
+	machand=_creat (macfname,0644);
 	if (machand>=0) {
-		_write (machand,macptr,macofs);
+		if ( _write (machand,macptr,macofs) );
 		_close (machand);
 		};
 	stopmac();

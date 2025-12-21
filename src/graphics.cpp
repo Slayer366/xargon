@@ -31,12 +31,36 @@ int origmode;
 int pagemode, pageshow, pagedraw;
 int showofs, drawofs, pagelen;
 
-void *LOST;
+char *LOST;
 
 extern void plot_cga (int x, int y, byte color);
 extern void plot_ega (int x, int y, byte color);
 extern void plot_vga (int x, int y, byte color);
 extern void line_cga (int x0, int y0, int x1, int y1, byte color);
+
+static SDL_Color palette_staging[256];
+static bool     palette_staging_dirty[256];
+
+static void init_palette_staging(void) {
+    static bool init_done = false;
+    if (init_done) return;
+    init_done = true;
+
+    // Query the current palette from the screen
+    SDL_Palette *pal = ::screen->format->palette;
+    if (pal) {
+        for (int i = 0; i < pal->ncolors; i++) {
+            palette_staging[i] = pal->colors[i];
+            palette_staging_dirty[i] = false;
+        }
+    } else {
+        // If no palette, just clear staging
+        for (int i = 0; i < 256; i++) {
+            palette_staging[i].r = palette_staging[i].g = palette_staging[i].b = 0;
+            palette_staging_dirty[i] = false;
+        }
+    }
+}
 
 p_rec vgapal={
 0,0,0,0,0,42,0,42,0,0,42,42,
@@ -123,7 +147,8 @@ void pixaddr_ega (int x,int y,char **vidbuf,unsigned char *bitc) {
 };
 
 void pixaddr_vga (int x,int y,char **vidbuf,unsigned char *bitc) {
-	*vidbuf=(void*) (0xa0000000+drawofs+(80*y)+(x>>2));
+//	*vidbuf=(void*) (0xa0000000+drawofs+(80*y)+(x>>2));
+	*vidbuf = (char*)(uint8_t*)screen->pixels + drawofs + (80 * y) + (x >> 2);
 	*bitc=(x&3);
 	};
 
@@ -216,6 +241,7 @@ int getportnum (void) {
 	};
 
 void pageflip (void) {
+	flush_staged_palette_changes();
 	SDL_Flip(::screen);
 return;
 	int portnum;
@@ -224,16 +250,16 @@ return;
 
 	setpages();
 	portnum=getportnum();
-	do {} while ((inportb(0x3da)&8));	// Wait for end of retrace
-	outport (portnum,0x0c+(showofs&0xff00));
-	outport (portnum,0x0d+((showofs&0x00ff)<<8));
-	do {} while (!(inportb(0x3da)&8));	// Wait for next retrace start
+//	do {} while ((inportb(0x3da)&8));	// Wait for end of retrace
+//	outport (portnum,0x0c+(showofs&0xff00));
+//	outport (portnum,0x0d+((showofs&0x00ff)<<8));
+//	do {} while (!(inportb(0x3da)&8));	// Wait for next retrace start
 	};
 
 void wait_vbi(void) {
 return;
-	do {} while ((inportb(0x3da)&8)!=0);
-	do {} while ((inportb(0x3da)&8)==0);
+//	do {} while ((inportb(0x3da)&8)!=0);
+//	do {} while ((inportb(0x3da)&8)==0);
 	};
 
 void vga_setpal(void) {
@@ -323,13 +349,52 @@ void setcolor (int c, int n1, int n2, int n3) {
 	outportb (DacData, n2);
 	outportb (DacData, n3);
 	*/
-	SDL_Color n;
-	n.r = pal6to8(n1);
-	n.g = pal6to8(n2);
-	n.b = pal6to8(n3);
-	SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, &n, c, 1);
-	SDL_Flip(::screen);
-	};
+
+  init_palette_staging();
+
+  Uint8 r = pal6to8(n1);
+  Uint8 g = pal6to8(n2);
+  Uint8 b = pal6to8(n3);
+
+  SDL_Color &entry = palette_staging[c];
+
+  // Only mark dirty if changed
+  if (entry.r != r || entry.g != g || entry.b != b) {
+      entry.r = r;
+      entry.g = g;
+      entry.b = b;
+      palette_staging_dirty[c] = true;
+  }
+
+//	SDL_Color n;
+//	n.r = pal6to8(n1);
+//	n.g = pal6to8(n2);
+//	n.b = pal6to8(n3);
+//	SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, &n, c, 1);
+	//SDL_Flip(::screen);
+};
+
+void flush_staged_palette_changes(void) {
+    init_palette_staging();
+
+    int lo = 256, hi = -1;
+    for (int i = 0; i < 256; i++) {
+        if (palette_staging_dirty[i]) {
+            if (i < lo) lo = i;
+            if (i > hi) hi = i;
+        }
+    }
+
+    if (hi >= lo) {
+        // update only the changed range
+        int count = hi - lo + 1;
+        SDL_SetPalette(::screen, SDL_LOGPAL | SDL_PHYSPAL, &palette_staging[lo], lo, count);
+        // clear dirty flags
+        for (int i = lo; i <= hi; i++) {
+            palette_staging_dirty[i] = false;
+        }
+    }
+}
 
 void fadeout(void) {
 	//p_rec currentpal;
@@ -394,7 +459,7 @@ void gr_init (void) {
 	clrvp (&mainvp,0);
 	vga_setpal();
 
-	LOST=malloc (1);
+	LOST=(char*)malloc (1);
 	};
 
 void gr_exit (void) {

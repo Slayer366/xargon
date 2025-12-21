@@ -135,53 +135,60 @@ void setmem(void *target, unsigned long len, char val)
 
 unsigned char inportb(unsigned int port)
 {
-	switch (port) {
-		case 0x201: // joystick
-			return 0;
-	}
-	fprintf(stderr, "Read from unknown portb 0x%02X\n", port);
-	return 0;
+//	switch (port) {
+//		case 0x201: // joystick
+//			return 0;
+//	}
+//	fprintf(stderr, "Read from unknown portb 0x%02X\n", port);
+  (void)port;
+  return 0;
 }
 
 unsigned char outportb(unsigned int port, unsigned char value)
 {
-	switch (port) {
-		case 0x201: // joystick
-			break;
-		case 0x3C8: // VGA
-		case 0x3C9:
-			break;
-		default:
-			fprintf(stderr, "Write to unknown portb 0x%04X: 0x%02X\n", port, value);
-			break;
-	}
-	return 0;
+//	switch (port) {
+//		case 0x201: // joystick
+//			break;
+//		case 0x3C8: // VGA
+//		case 0x3C9:
+//			break;
+//		default:
+//			fprintf(stderr, "Write to unknown portb 0x%04X: 0x%02X\n", port, value);
+//			break;
+//	}
+  (void)port;
+  (void)value;
+  return 0;
 }
 
 unsigned char outport(unsigned int port, unsigned int value)
 {
-	switch (port) {
-		case 0x201: // joystick
-			return 0;
-		case 0x3C4: // VGA
-		case 0x3CE:
-		case 0x3D4:
-			break;
-		default:
-			fprintf(stderr, "Write to unknown portw 0x%04X: 0x%04X\n", port, value);
-			break;
-	}
-	return 0;
+//	switch (port) {
+//		case 0x201: // joystick
+//			return 0;
+//		case 0x3C4: // VGA
+//		case 0x3CE:
+//		case 0x3D4:
+//			break;
+//		default:
+//			fprintf(stderr, "Write to unknown portw 0x%04X: 0x%04X\n", port, value);
+//			break;
+//	}
+  (void)port;
+  (void)value;
+  return 0;
 }
 
 void intr(int intnum, struct REGPACK *regs)
 {
-	switch (intnum) {
-		case 0x10: // video
-			printf("TODO: video int 10 ax %04X\n", regs->r_ax);
-			break;
-	}
-	return;
+//	switch (intnum) {
+//		case 0x10: // video
+//			printf("TODO: video int 10 ax %04X\n", regs->r_ax);
+//			break;
+//	}
+//	return;
+  (void)intnum;
+  (void)regs;
 }
 
 void nosound(void)
@@ -257,7 +264,7 @@ void clrvp (vptype *vp,byte col)
 		if (SDL_LockSurface(::screen) < 0) return;
 	}
 
-	// TODO: optimise by incrementing shape ptr instead
+	// TODO: optimize by incrementing shape ptr instead
 	for (int y = 0; y < vp->vpyl; y++) {
 		for (int x = 0; x < vp->vpxl; x++) {
 			((char *)::screen->pixels)[(vp->vpy + y) * SCREEN_WIDTH + (vp->vpx + x)] = col;
@@ -272,7 +279,7 @@ void scrollvp (vptype *vp,int xd,int yd)
 {
 	// TODO: This function is required to scroll message boxes, but it doesn't
 	// seem to be needed for in-game scrolling, and seems to slow things down.
-	printf("todo: scrollvp(%d,%d)\n", xd, yd);
+	//printf("todo: scrollvp(%d,%d)\n", xd, yd);
 
 	if (SDL_MUSTLOCK(::screen)) {
 		if (SDL_LockSurface(::screen) < 0) return;
@@ -307,16 +314,43 @@ void scrollvp (vptype *vp,int xd,int yd)
 		);
 	}
 
+    /* Clear newly exposed area to avoid border smear */
+    if (yd < 0) {
+        /* scrolled down ? clear bottom strip */
+        int cy = vp->vpy + vp->vpyl + yd;
+        for (int y = 0; y < -yd; y++) {
+            memset(
+                &s[(cy + y) * SCREEN_WIDTH + vp->vpx],
+                vp->vpback,
+                vp->vpxl
+            );
+        }
+    } else if (yd > 0) {
+        /* scrolled up ? clear top strip */
+        int cy = vp->vpy;
+        for (int y = 0; y < yd; y++) {
+            memset(
+                &s[(cy + y) * SCREEN_WIDTH + vp->vpx],
+                vp->vpback,
+                vp->vpxl
+            );
+        }
+    }
+
 	if (SDL_MUSTLOCK(::screen)) SDL_UnlockSurface(::screen);
 
-	if (drawofs == showofs) SDL_Flip(::screen);
+	if (drawofs == showofs) {
+	   if (!drawwinthrottle) {
+	      SDL_Flip(::screen);
+	   }
+	}	        
 	return;
 }
 
 void scroll (vptype *vp,int x0,int y0,int x1,int y1,int xd,int yd)
 {
 	// TODO
-	printf("todo: scroll\n");
+	//printf("todo: scroll\n");
 	return;
 }
 
@@ -343,11 +377,9 @@ void ldrawsh_vga (vptype *vp, int draw_x, int draw_y, int sh_xlb, int sh_yl,
 	if (draw_y < 0) y = -draw_y;
 	if (draw_x < 0) startx = -draw_x;
 
-	int actual_width;
+	int actual_width = sh_xlb;
 	if (draw_x + sh_xlb > vp->vpxl) {
 		actual_width = vp->vpxl - draw_x;
-	} else {
-		actual_width = sh_xlb;
 	}
 	if (draw_y + sh_yl > vp->vpyl) {
 		sh_yl = vp->vpyl - draw_y;
@@ -365,7 +397,7 @@ void ldrawsh_vga (vptype *vp, int draw_x, int draw_y, int sh_xlb, int sh_yl,
 		if (SDL_LockSurface(::screen) < 0) return;
 	}
 
-	// TODO: optimise by incrementing shape ptr instead
+	// TODO: optimize by incrementing shape ptr instead
 	for (; y < sh_yl; y++) {
 		for (int x = startx; x < actual_width; x++) {
 			uint8_t pixel = shape[y * sh_xlb + x];
@@ -377,17 +409,22 @@ void ldrawsh_vga (vptype *vp, int draw_x, int draw_y, int sh_xlb, int sh_yl,
 
 	if (SDL_MUSTLOCK(::screen)) SDL_UnlockSurface(::screen);
 
-	if (drawofs == showofs) SDL_Flip(::screen);
+	if (drawofs == showofs) {
+	   if (!drawwinthrottle) {
+	      SDL_Flip(::screen);
+	   }
+    }
 	return;
 }
 
 void lcopypage(void)
 {
+	flush_staged_palette_changes();
 	SDL_Flip(::screen);
 	return;
 }
 
-void uncrunch (char *sourceptr, char *destptr, int length)
+void uncrunch (unsigned char *sourceptr, char *destptr, int length)
 {
 	// TODO
 	if (destptr == (char *)0xb8000000) {
@@ -515,7 +552,7 @@ void fillAudioBuffer(void *udata, Uint8 *stream, int len)
 						::opl.song_pos += 2;
 						break;
 				}
-				::opl.delay_remaining = nextDelay * (48000/512) / 1000;
+				::opl.delay_remaining = nextDelay * (44100/512) / 1000;
 				if (::opl.song_pos >= ::opl.song_len) ::opl.song_pos = 0; // loop
 			}
 #endif
@@ -533,7 +570,7 @@ void fillAudioBuffer(void *udata, Uint8 *stream, int len)
 	// Play the next bit of the sound effect if needed
 	if (::sound.len > 0) {
 		// Take U8 sound at any rate, convert to S16 48kHz and mix with music
-		double ratio = sound.samplerate / 48000.0;
+		double ratio = sound.samplerate / 44100.0;
 		for (int i = 0; i < bufvalid_samples; i++) {
 			int j = ::sound.pos + (int)(i * ratio);
 			if (j >= ::sound.len) break;
@@ -568,7 +605,7 @@ void StartWorx(void)
 	::opl.mutex = SDL_CreateMutex();
 
 	SDL_AudioSpec wanted;
-	wanted.freq = 48000;
+	wanted.freq = 44100;
 	wanted.format = AUDIO_S16;
 	wanted.channels = 2;
 	wanted.samples = 2048;
@@ -582,8 +619,11 @@ void StartWorx(void)
 
 	::opl.sh = new SampleHandler();
 	::opl.chip = new DBOPL::Handler();
-	::opl.chip->Init(48000);
+	::opl.chip->Init(44100);
 	SDL_PauseAudio(0);
+
+	//Hide mouse...
+	SDL_ShowCursor(SDL_DISABLE);
 
 	return;
 }

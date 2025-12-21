@@ -27,7 +27,7 @@ AC_ARG_WITH([libgamemusic],
 
 HAVE_MUSIC=0
 AS_IF([test "x$with_libgamemusic" != xno], [
-	PKG_CHECK_MODULES([libgamemusic], [libgamemusic < 2.0], [
+	PKG_CHECK_MODULES([libgamemusic], [libgamemusic < 2.0 libgamecommon], [
 		HAVE_MUSIC=1
 	], [
 		if test "x$with_libgamemusic" != xcheck; then

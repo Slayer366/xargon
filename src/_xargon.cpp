@@ -4,7 +4,7 @@
 //
 // by Allen W. Pilgrim
 
-extern unsigned _stklen=8192;
+unsigned _stklen=8192;
 
 #undef _GNU_SOURCE
 #include "port.h"
@@ -29,6 +29,16 @@ extern unsigned _stklen=8192;
 #include "include/x_obj.h"
 #include "include/xargon.h"
 #include "include/x_snd.h"
+
+
+#ifndef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#ifndef max
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
 
 wintype menu_win;
 vptype gamevp, statvp, textvp, tempvp;
@@ -91,10 +101,10 @@ void rexit2 (int n);
 void init_colors (void) {
 	int c;
 
-	setcolor (250,0,0,0); setcolor (251,0,0,0);
+	setcolor (250,0,0,0); flush_staged_palette_changes(); setcolor (251,0,0,0); flush_staged_palette_changes();
 	for (c=207; c<234; c++) {				// reset hero colors
 		setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-		};
+		}; flush_staged_palette_changes();
 	for (c=162; c<168; c++) {				// reset laser colors
 		setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
 		};
@@ -165,7 +175,7 @@ void statwin (int flg) {
 	if (!flg) {
 		fontcolor (&textvp,6,121);
 		clearvp (&textvp);
-		wprint (&textvp,148-strlen(i_msg)*3,1,2,i_msg);
+		wprint_batch (&textvp,148-strlen(i_msg)*3,1,2,i_msg);
 		};
 	};
 
@@ -198,10 +208,10 @@ void drawstats(void) {
 	int d=0;
 	char tempstr[32];
 
-	fontcolor (&statvp,6,121);
-	wprint (&statvp,12,14,2,"       ");
+	fontcolor (&statvp,6,121);            // score
+	wprint_batch (&statvp,12,14,2,"       ");
 	ultoa (pl.score,tempstr,10);
-	wprint (&statvp,54-(1+strlen(tempstr)*6),14,2,tempstr);
+	wprint_batch (&statvp,54-(1+strlen(tempstr)*6),14,2,tempstr);
 
 	if ((cnt_fruit>=16)&&(pl.health<5)) {
 		cnt_fruit=0; pl.health++;
@@ -214,16 +224,16 @@ void drawstats(void) {
 		};
 
 	fontcolor (&statvp,5,121);						// emeralds
-	wprint (&statvp,229,14,1,"  ");
+	wprint_batch (&statvp,229,14,1,"  ");
 	itoa (pl.emeralds,tempstr,10);
-	wprint (&statvp,245-(strlen(tempstr)*8),14,1,tempstr);
+	wprint_batch (&statvp,245-(strlen(tempstr)*8),14,1,tempstr);
 
 //	if (debug&&(!swrite)) {
 	if (debug) {
 		fontcolor (&statvp,3,121);
-		wprint (&statvp,12,14,2,"       ");
+		wprint_batch (&statvp,12,14,2,"       ");
 		ultoa (coreleft(),tempstr,10);
-		wprint (&statvp,54-(1+strlen(tempstr)*6),14,2,tempstr);
+		wprint_batch (&statvp,54-(1+strlen(tempstr)*6),14,2,tempstr);
 		};
 
 	for (c=0; c<4; c++) {
@@ -239,19 +249,19 @@ void drawstats(void) {
 	drawshape (&statvp,0x1e48+icon_fruit,170,13);	// fruit icon
 	itoa (cnt_fruit,tempstr,10);
 	fontcolor (&statvp,3,121);
-	wprint (&statvp,185,15,2,"  ");
-	wprint (&statvp,197-(1+strlen(tempstr)*6),15,2,tempstr);
+	wprint_batch (&statvp,185,15,2,"  ");
+	wprint_batch (&statvp,197-(1+strlen(tempstr)*6),15,2,tempstr);
 
 	if (botcol==3) fontcolor (&textvp,7-pagedraw*botcol,121);
 	else fontcolor (&textvp,botcol,121);
 	clearvp (&textvp);
-	wprint (&textvp,148-strlen(botmsg)*3,1,2,botmsg);
+	wprint_batch (&textvp,148-strlen(botmsg)*3,1,2,botmsg);
 	if ((pl.ouched==1)||(pl.ouched==-1)) {
 		pl.ouched=0;
-		setcolor (0,0,0,0);
+		setcolor (0,0,0,0); flush_staged_palette_changes();
 		for (c=207; c<234; c++) {				// change hero colors to normal
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-			};
+			}; flush_staged_palette_changes();
 		};
 	};
 
@@ -273,9 +283,9 @@ void loadcfg (void) {
 		cf.firstthru=1;
 		}
 	else {
-		read (cfgfile,&hiname,sizeof (hiname));
-		read (cfgfile,&hiscore,sizeof(hiscore));
-		read (cfgfile,&savename,sizeof(savename));
+		if ( read (cfgfile,&hiname,sizeof (hiname)) );
+		if ( read (cfgfile,&hiscore,sizeof(hiscore)) );
+		if ( read (cfgfile,&savename,sizeof(savename)) );
 		if (read (cfgfile,&cf,sizeof(cf))<0) cf.firstthru=1;
 		};
 	close (cfgfile);
@@ -284,12 +294,12 @@ void loadcfg (void) {
 void savecfg (void) {
 	int cfgfile;
 
-	cfgfile=_creat (cfgfname,0);
+	cfgfile=_creat (cfgfname,0644);
 	if (cfgfile>=0) {
-		write (cfgfile,&hiname,sizeof (hiname));
-		write (cfgfile,&hiscore,sizeof(hiscore));
-		write (cfgfile,&savename,sizeof(savename));
-		write (cfgfile,&cf,sizeof(cf));
+		if ( write (cfgfile,&hiname,sizeof (hiname)) );
+		if ( write (cfgfile,&hiscore,sizeof(hiscore)) );
+		if ( write (cfgfile,&savename,sizeof(savename)) );
+		if ( write (cfgfile,&cf,sizeof(cf)) );
 		};
 	close (cfgfile);
 	};
@@ -330,10 +340,10 @@ void loadboard (char *fname) {
 	if (!read (boardfile,&cnt_fruit,sizeof(cnt_fruit))) rexit(5);
 	for (c=0; c<numobjs; c++) {
 		if (objs[c].inside_val != 0) {
-			read (boardfile,&tempint,sizeof(tempint));
-			objs[c].inside=malloc(tempint+1);
+			if ( read (boardfile,&tempint,sizeof(tempint)) );
+			objs[c].inside=(char*)malloc(tempint+1);
 			objs[c].inside_val = 1;
-			read (boardfile,objs[c].inside,tempint+1);
+			if ( read (boardfile,objs[c].inside,tempint+1) );
 			}
 		else {
 			objs[c].inside = NULL;
@@ -373,18 +383,18 @@ void saveboard (char *fname) {
 	boardfile=_creat (dest, 0644);				// Was O_BINARY
 	if (boardfile<0) rexit(20);
 	if (write (boardfile,&bd,sizeof(bd))<0) rexit(5);
-	write (boardfile,&numobjs,sizeof(numobjs));
+	if ( write (boardfile,&numobjs,sizeof(numobjs)) );
 	//write (boardfile,&objs,numobjs*sizeof(objs[0]));
 	for (int i = 0; i < numobjs; i++) {
-		write (boardfile, &objs[i], 31);
+		if ( write (boardfile, &objs[i], 31) );
 	}
-	write (boardfile,&pl,sizeof(pl));
-	write (boardfile,&cnt_fruit,sizeof(cnt_fruit));
+	if ( write (boardfile,&pl,sizeof(pl)) );
+	if ( write (boardfile,&cnt_fruit,sizeof(cnt_fruit)) );
 	for (c=0; c<numobjs; c++) {
 		if (objs[c].inside_val != 0) {
 			tempint=strlen (objs[c].inside);
-			write (boardfile,&tempint,sizeof(tempint));
-			write (boardfile,objs[c].inside,tempint+1);
+			if ( write (boardfile,&tempint,sizeof(tempint)) );
+			if ( write (boardfile,objs[c].inside,tempint+1) );
 			};
 		};
 	_close (boardfile);
@@ -399,6 +409,7 @@ int loadsavewin (char *msg, char *blankmsg) {
 	dx1hold=1; dy1hold=1; fire1off=1;
 	defwin (&menu_win,13,16,6,7,0,0,textbox);			// 96x112
 	drawwin (&menu_win);
+	drawwinthrottle = 1;
 	fontcolor (&menu_win.inside,7,-1);
 	wprint (&menu_win.inside,12,4,1,msg);
 	fontcolor (&menu_win.inside,4,-1);
@@ -418,6 +429,7 @@ int loadsavewin (char *msg, char *blankmsg) {
 	wprint (&menu_win.inside,42,100,2,"TO ABORT");
 	fontcolor (&menu_win.inside,8,1);
 	for (c=0; c<11; c++)	wprint (&menu_win.inside,4,20+c*6,2," ");
+	drawwinthrottle = 0;
 
 	do {
 		tempstr[1]=0;
@@ -426,8 +438,8 @@ int loadsavewin (char *msg, char *blankmsg) {
 		c=(c&7)+1; tempstr[0]=c;
 		wprint (&menu_win.inside,4,20+cur*10,2,tempstr);
 		delay (100);
-		wprint (&menu_win.inside,4,20+cur*10,2," ");
 		if (((dx1+dy1)!=0)&&(abs((getclock())-moveclock)>1)) {
+			wprint (&menu_win.inside,4,20+cur*10,2," ");
 			moveclock=(getclock());
 			cur+=dx1+dy1;
 			if ((cur>=0)&&(cur<(numsaves))) snd_play (4,snd_jump);
@@ -466,7 +478,12 @@ void savegame (void) {
 		fontcolor (&menu_win.inside,7,1);
 		wprint (&menu_win.inside,28,20+num*10,2,"         ");
 		winput (&menu_win.inside,28,20+num*10,2,s,9);
-		if ((key!=escape)&&(strlen(s)!=0)) {
+    if ((key!=escape) && (strlen(s) == 0)) {
+      strcpy(s, "SAVE");  // default if nothing entered
+      char tmp[16]; itoa(num, tmp, 10); // add # to entry name
+      strcat(s, tmp);
+    }
+		if ((key!=escape)/*&&(strlen(s)!=0)*/) {
 			strcpy (savename[num],s);
 			itoa (num,tempstr,10);
 			strcpy (boardname,"save_");
@@ -514,8 +531,10 @@ int getline (int n, char *line, int dospace) {
 	char ch;
 
 	while ((a<n)&&(c<textmsglen)) a+=(*(textmsg+c++))==13;
-	while ((*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
-	if ((*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
+//	while ((*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
+//	if ((*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
+	while ((c<textmsglen)&&(*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
+	if ((c<textmsglen)&&(*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
 		ourcolor=*(textmsg+c++)-'0';
 		};
 	a=0;
@@ -533,8 +552,8 @@ void printline (vptype *ourvp, int y, int n, int flg) {
 
 	fontcolor (ourvp,getline (n,line,1),((flg)?121:129));			//121
 //	fontcolor (ourvp,getline (n,line,1),((flg)?17:129));			//121
-	wprint (ourvp,0,y,2,"                                    ");
-	wprint (ourvp,(ourvp->vpxl-6*strlen(line))/2,y,2,line);
+	wprint_batch (ourvp,0,y,2,"                                    ");
+	wprint_batch (ourvp,(ourvp->vpxl-6*strlen(line))/2,y,2,line);
 	};
 
 void ourdelay (void) {
@@ -641,7 +660,7 @@ void putlevelmsg (int n) {
 		clearvp (&levelwin.inside);
 		for (c=207; c<234; c++) {					// reset hero colors
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-			};
+			}; flush_staged_palette_changes();
 		for (c=0; c<16; c++) {						// draws face
 			drawshape (&levelwin.topleft,0x4000+4*256+c+20,16*(c&3),16*(c/4));
 			};
@@ -682,7 +701,7 @@ void dialogmsg (int n, int flg) {
 		fontcolor (&dialogwin.inside,7,0);
 		for (c=207; c<234; c++) {					// reset hero colors
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-			};
+			}; flush_staged_palette_changes();
 		if (flg==0) {
 			for (c=0; c<16; c++) {					// draws hero face
 				drawshape (&dialogwin.topleft,0x4000+4*256+c+20,
@@ -732,10 +751,12 @@ int askquit (void) {
 	defwin (&quitwin,10,64,9,1,0,0,textbox);
 	drawwin (&quitwin);
 	drawshape (&quitwin.inside,0x210b,10,3);
-	do {checkctrl0(0);}
-		while ((key==0)&&(fire1==0)&&(fire2==0)&&(dx1==0)&&(dy1==0));
+	do {
+		checkctrl0(0);
+	if (key == SDLK_RETURN) key = 'Y';
+	} while ((key==0)&&(fire1==0)&&(fire2==0)&&(dx1==0)&&(dy1==0));
 	key=toupper(key); return (key);
-	};
+};
 
 void drawcell (int x, int y) {
 	int boardcell;
@@ -791,17 +812,19 @@ void printhi (int newhi) {
 			};
 		};
 
+	drawwinthrottle = 1;
 	fontcolor (&hiwin.inside,7,-1);
 	wprint (&hiwin.inside,18,4,2,"- HIGH SCORES -");
 	fontcolor (&hiwin.inside,4,-1);
 	wprint (&hiwin.inside,15,8,2,"________________");
+	drawwinthrottle = 0;
 
 	fontcolor (&hiwin.inside,3,-1);
 	for (c=0; c<numhighs; c++) wprint (&hiwin.inside,8,20+c*7,2,hiname[c]);
 	fontcolor (&hiwin.inside,2,-1);
 	for (c=0; c<numhighs; c++) {
-		wprint (&hiwin.inside,120-(strlen(s)*6),20+c*7,2,
-			ultoa (hiscore[c],s,10));
+		ultoa (hiscore[c],s,10);
+		wprint (&hiwin.inside,120-(strlen(s)*6),20+c*7,2,s);
 		};
 
 	if (newhi) {
@@ -809,6 +832,11 @@ void printhi (int newhi) {
 		fontcolor (&hiwin.inside,7,back);
 		wprint (&hiwin.inside,8,20+posn*7,2,"        ");
 		winput (&hiwin.inside,8,20+posn*7,2,hiname[posn],8);
+    if (strlen(hiname[posn]) == 0) {
+        strcpy(hiname[posn], "M.H."); // default name if nothing is entered
+        fontcolor (&hiwin.inside,7,back);
+        wprint (&hiwin.inside,8,20+posn*7,2,hiname[posn]);
+    }
 		savecfg ();
 		};
 	if (newhi==0) rest ();
@@ -851,6 +879,7 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 		upd_colors (); gamecount++;
 		if (++count>=12) count=0;
 		if ((count&1)||(oldcur!=cur)) {
+			setpagemode(1);
 			if (menuflag==1)
 				drawshape (&menuwin.inside,0x4413,(textx0-12)&0xfff8,
 					12+(y0+oldcur)*8);
@@ -860,6 +889,7 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 				(textx0-12)&0xfff8,13+(y0+cur)*8);
 			else drawshape (&menuwin.inside,0x0201+(count/2),
 				(textx0-12)&0xfff8,6+(y0+cur)*8);
+			setpagemode(0);
 			};
 		oldcur=cur;
 		checkctrl0(0);
@@ -1046,6 +1076,7 @@ void inv_win (void) {
 	defwin (&invwin,5,16,14,7,0,0,textbox);		// 224 pixels wide inside
 	drawwin (&invwin);
 	snd_play (5,snd_menu);
+	drawwinthrottle = 1;
 	fontcolor (&invwin.inside,7,-1);
 	wprint (&invwin.inside,20,4,1,"INVENTORY STATUS WINDOW");
 	wprint (&invwin.inside,20,12,1,"-----------------------");
@@ -1090,6 +1121,7 @@ void inv_win (void) {
 
 	drawshape (&invwin.inside,0x1e40,26,61);
 	drawshape (&invwin.inside,0x1e40,174,61);
+	drawwinthrottle = 0;
 
 	fontcolor (&invwin.inside,7,-1);
 	wprint (&invwin.inside,69,100,1,"#1");
@@ -1165,6 +1197,14 @@ void play (int demoflg) {
 	setpagemode (1);
 	dolevelsong();
 	enable();
+//SEB hack => force full refresh to avoid smal glitch at start map
+        setpagemode(1);
+        drawstats();
+        drawboard();
+        pageflip(); setpagemode(0);
+        setpagemode(1);
+        moddrawboard();
+//SEB end of hack
 
 	do {
 //		enable();

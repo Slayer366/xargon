@@ -73,6 +73,9 @@ extern void fadein (void);
 extern void fadeout (void);
 extern void clrpal (void);
 
+extern void flush_staged_palette_changes (void);
+extern int drawwinthrottle;
+
 typedef unsigned char p_rec[0x300];
 extern void vga_setpal (void);
 extern p_rec vgapal;

@@ -65,7 +65,7 @@ void interrupt (*worxint8)(void)=NULL;
 
 void interrupt spkr_intr (void);
 
-const char vochdr[0x20]={
+const unsigned char vochdr[0x20]={
 	0x43,0x72,0x65,0x61,0x74,0x69,0x76,0x65,
 	0x20,0x56,0x6f,0x69,0x63,0x65,0x20,0x46,
 	0x69,0x6c,0x65,0x1a,0x1a,0x00,0x0a,0x01,
@@ -129,7 +129,7 @@ void getvoc (int c) {
 		*(memvoc+n*maxvoclen+0x1c)=(char)((voclen[c])>>8);
 		*(memvoc+n*maxvoclen+0x1e)=96;			// Speed = 256-1,000,000/rate
 		lseek (vocfilehandle,vocposn[c],SEEK_SET);
-		read (vocfilehandle,memvoc+n*maxvoclen+0x20,voclen[c]);
+		if ( read (vocfilehandle,memvoc+n*maxvoclen+0x20,voclen[c]) );
 		};
 	};
 
@@ -154,11 +154,11 @@ void snd_init (char *voclib) {
 	if (voclib[0]==0) {vocflag=0; return;}
 	vocfilehandle=_open (voclib,O_BINARY|O_RDONLY);
 	if (vocfilehandle==-1) {vocflag=0; return;}
-	read (vocfilehandle,&vocposn,sizeof (vocposn));
-	read (vocfilehandle,&voclen, sizeof (voclen ));
-	read (vocfilehandle,&vocrate,sizeof (vocrate));
-	read (vocfilehandle,&textposn,sizeof(textposn));
-	read (vocfilehandle,&textlen,sizeof (textlen));
+	if ( read (vocfilehandle,&vocposn,sizeof (vocposn)) );
+	if ( read (vocfilehandle,&voclen, sizeof (voclen )) );
+	if ( read (vocfilehandle,&vocrate,sizeof (vocrate)) );
+	if ( read (vocfilehandle,&textposn,sizeof(textposn)) );
+	if ( read (vocfilehandle,&textlen,sizeof (textlen)) );
 	};
 
 void snd_play (int priority, int num) {
@@ -197,25 +197,25 @@ void snd_do (void) {
 			SetMasterVolume (0xf,0xf);
 			};
 		};
-	if (vocflag) memvoc=malloc (maxvoclen*memvocs);
+	if (vocflag) memvoc=(char*)malloc (maxvoclen*memvocs);
 	else {
 		memvoc=NULL;
-		freq=malloc (maxsndlen*2+128);
-		dur=malloc (maxsndlen*2+128);
+		freq=(int*)malloc (maxsndlen*2+128);
+		dur=(int*)malloc (maxsndlen*2+128);
 		lseek (vocfilehandle,headersize,SEEK_SET);
 		for (c=0; c<num_macs; c++) {
-			read (vocfilehandle,&j,2);
+			if ( read (vocfilehandle,&j,2) );
 			if (j!=0) {
-				soundmac[c]=malloc(j);
+				soundmac[c]=(char*)malloc(j);
 				if (!soundmac[c]) rexit (154);
-				read (vocfilehandle,soundmac[c],j);
+				if ( read (vocfilehandle,soundmac[c],j) );
 				}
 			else soundmac[c]=NULL;
 			};
-		SOUNDS=malloc (10480);
+		SOUNDS=(int*)malloc (10480);
 		soundhandle=_open ("audio.epc",O_BINARY|O_RDONLY);
 		if (soundhandle==-1) rexit (155);
-		_read (soundhandle,SOUNDS,10400);
+		if ( _read (soundhandle,SOUNDS,10400) );
 		close (soundhandle);
 		};
 
@@ -236,7 +236,7 @@ void text_get (int n) {
 
 	if (textlen[n]!=0) {
 		textmsglen=textlen[n];
-		textmsg=malloc(textmsglen);
+		textmsg=(char*)malloc(textmsglen);
 		if (textmsg!=NULL) {
 			lseek (vocfilehandle,textposn[n],SEEK_SET);
 			if (read (vocfilehandle,textmsg,textmsglen)==-1) textmsg=NULL;
@@ -253,7 +253,7 @@ void snd_exit (void) {
 	if (dur!=NULL) free (dur);
 
 	for (c=0; c<num_macs; c++) if (soundmac[c]!=NULL) free (soundmac[c]);
-	if (memvocs!=NULL) free (memvoc);
+	if (memvocs!=0) free (memvoc);
 	if (vocfilehandle>=0) close (vocfilehandle);
 	if (oldint8!=NULL) setvect (8,oldint8);
 	if (SetDSP) DSPClose();

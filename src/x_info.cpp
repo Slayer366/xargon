@@ -29,12 +29,12 @@ void init_info (void) {
 
 	blockfile=open (tilefile,O_BINARY);
 	while (read(blockfile,&c,2)>0) {
-		read (blockfile,&info[c].sh,2);
-		read (blockfile,&temp,2);
+		if ( read (blockfile,&info[c].sh,2) );
+		if ( read (blockfile,&temp,2) );
 		info[c].flags^=temp;
-		read (blockfile,&len,1);
-		info [c].na=malloc (len+1);
-		read (blockfile,info[c].na,len);
+		if ( read (blockfile,&len,1) );
+		info [c].na=(char*)malloc (len+1);
+		if ( read (blockfile,info[c].na,len) );
 		info[c].na[len]=0;
 		};
 

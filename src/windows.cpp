@@ -10,6 +10,8 @@ char cursorchar;
 int  curhi, curlo, curback;					// current color scheme
 //extern int *myclock;
 
+int drawwinthrottle = 0;
+
 void defwin (wintype *win,int x8,int y,int xl16,int yl16,int h16,int v16,int flags) {
 	win->winflags=flags;
 
@@ -56,6 +58,7 @@ void drawwin (wintype *win) {
 		// 2. Draw border characters,  etc.
 
 	clearvp (&win->border);
+	drawwinthrottle = 1;
 	if (win->winflags&textbox) {
 		drawshape (&win->border,0x440b,0,0);
 		drawshape (&win->border,0x440d,win->winxl+8,0);
@@ -80,7 +83,7 @@ void drawwin (wintype *win) {
 		drawshape (&win->border,0x4707,win->winxl+8,win->winyl+16);
 		drawshape (&win->border,0x4705,0,win->winyl+16);
 		for (c=0; c<(win->winxl16); c++) {
-			if ((c==0)|(c!=win->winh16)) {
+			if ((c==0)||(c!=win->winh16)) {
 				drawshape (&win->border,0x4704,c*16+8,0);
 				drawshape (&win->border,0x4706,c*16+8,win->winyl+16);
 				};
@@ -108,7 +111,7 @@ void drawwin (wintype *win) {
 		drawshape (&win->border,0x4407,win->winxl+8,win->winyl+16);
 		drawshape (&win->border,0x4405,0,win->winyl+16);
 		for (c=0; c<(win->winxl16); c++) {
-			if ((c==0)|(c!=win->winh16)) {
+			if ((c==0)||(c!=win->winh16)) {
 				drawshape (&win->border,0x4404,c*16+8,0);
 				drawshape (&win->border,0x4406,c*16+8,win->winyl+16);
 				};
@@ -131,13 +134,37 @@ void drawwin (wintype *win) {
 			drawshape (&win->border,0x4408,win->winh+8,win->winyl+16);
 			};
 		};
+		drawwinthrottle = 0;
 	};
 
 void undrawwin (wintype *win) {
 	clearvp (&(win->border));
 	};
 
-void wprint (vptype *vp, int x, int y, int font, char *text) {
+void wprint_batch (vptype *vp, int x, int y, int font, const char *text) {
+	int fontx;
+	int c;
+
+	if ((curhi!=vp->vphi)||(curback!=vp->vpback)) {
+		fontcolor (vp, vp->vphi, vp->vpback);
+		};
+
+	switch (font) {
+		case 1: fontx=8; break;			// 8x8
+		case 2: fontx=6; break;			// 6x6
+		default: fontx=0;
+		};
+	if (fontx!=0) {
+	  drawwinthrottle = 1;
+		for (c=0; c<strlen(text); c++) {
+			drawshape (vp,(font<<8)+(text[c]&0x7f),x+fontx*c,y);
+			// (font<<8) left shift twice = font*8*8
+			};
+		drawwinthrottle = 0;
+		};
+	};
+
+void wprint (vptype *vp, int x, int y, int font, const char *text) {
 	int fontx;
 	int c;
 

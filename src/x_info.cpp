@@ -16,7 +16,8 @@
 extern char tilefile[];
 
 void init_info (void) {
-	int c,d,temp;
+	int c,temp;
+	//int d;
 	char len;
 	int flagsdef=f_notvine|f_notstair|f_notwater;
 	int blockfile;
@@ -29,13 +30,14 @@ void init_info (void) {
 
 	blockfile=open (tilefile,O_BINARY);
 	while (read(blockfile,&c,2)>0) {
-		if ( read (blockfile,&info[c].sh,2) );
-		if ( read (blockfile,&temp,2) );
+		if ( read (blockfile,&info[c].sh,2) ) {};
+		if ( read (blockfile,&temp,2) ) {};
 		info[c].flags^=temp;
-		if ( read (blockfile,&len,1) );
+		if ( read (blockfile,&len,1) ) {};
 		info [c].na=(char*)malloc (len+1);
-		if ( read (blockfile,info[c].na,len) );
-		info[c].na[len]=0;
+		if ( read (blockfile,info[c].na,len) ) {};
+		//info[c].na[len]=0;
+		info[c].na[(unsigned char)len]=0;
 		};
 
 	for (c=0; c<numstates; c++) {

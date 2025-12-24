@@ -62,8 +62,10 @@ void xlate_table (int n, char *addr, char *bucket1) {
 	int16_t x,y,b,flags;
 	//uint16_t x,y,flags;
 	//int b;
-	char *bucket,*tempbucket;
-	unsigned char databyte,shapebyte;
+	char *bucket;
+	//char *tempbucket;
+	unsigned char shapebyte;
+	//unsigned char databyte;
 	unsigned int colorand, colorshift;
 	char *dest;
 	//int16_t tblofs, dataofs;
@@ -165,7 +167,7 @@ void shm_do (void) {
 	if (!read (shafile,shoffset,128*4)) rexit(9);
 
 	// Read 128 words (short ints) ... lengths of each shape file
-	if ( read (shafile,shlen,128*2) );
+	if ( read (shafile,shlen,128*2) ) {};
  
 	for (c=0; c<shm_maxtbls; c++) {
 		if (!shm_want[c]) {
@@ -180,7 +182,7 @@ void shm_do (void) {
 			lseek (shafile, shoffset [c], SEEK_SET);	// Seek to position in file
 			shaddr[c]=(char*)malloc (shlen[c]);					// Allocate mem to hold it
 			if (shaddr[c]==NULL) rexit (9);
-			if ( read (shafile, shaddr[c], shlen[c]) );		// Read it in
+			if ( read (shafile, shaddr[c], shlen[c]) ) {};		// Read it in
 			};
 		};
 

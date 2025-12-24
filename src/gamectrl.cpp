@@ -77,7 +77,7 @@ void readjoy (int *x, int *y) {				// may want to delay...
 
 int caldir (char *s, int *jx, int *jy) {
 	int result=0;
-	int key=0;
+	key=0;
 	cputs (s);
 	do {
 		readjoy (jx,jy);
@@ -105,7 +105,7 @@ int joypresent (void) {
 	};
 
 int calibratejoy (void) {
-	int key;
+	//int key;
 	redo:
 	joyflag=0;
 	cputs ("\r\nJoystick calibration:  Press ESCAPE to abort.\r\n");
@@ -240,7 +240,7 @@ void sensectrlmode (void) {
 	};
 
 int gc_config (void) {
-	int key=' ';
+	key=' ';
 	if (joypresent()) {
 		cputs ("\r\nGame controller:  K)eyboard,  J)oystick?  ");
 		do {
@@ -296,7 +296,9 @@ void recordmac (char *fname) {
 	if (macptr!=NULL) {
 		macofs=0;
 		macrecord=1;
-		strcpy (macfname,fname);
+		//strcpy (macfname,fname);
+		strncpy(macfname, fname, sizeof(macfname)-1);
+		macfname[sizeof(macfname) - 1] = '\0';
 		gamecount=0;
 		};
 	};
@@ -307,7 +309,7 @@ void macrecend (void) {
 	if (!macrecord) return;
 	machand=_creat (macfname,0644);
 	if (machand>=0) {
-		if ( _write (machand,macptr,macofs) );
+		if ( _write (machand,macptr,macofs) ) {};
 		_close (machand);
 		};
 	stopmac();

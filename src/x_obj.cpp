@@ -64,6 +64,9 @@ void init_objinfo (void) {
 	};
 
 int msg_null (int n, int msg, int z) {
+	(void)n;
+	(void)msg;
+	(void)z;
 	return (0);
 	};
 
@@ -79,34 +82,44 @@ int msg_mine (int n, int msg, int z) {
 			if (!fishdo(n,pobj->x+pobj->xd,pobj->y)) pobj->xd=-pobj->xd;
 			if (!fishdo(n,pobj->x,pobj->y+pobj->yd)) pobj->yd=-pobj->yd;
 			if (xr_random (16)==0) addobj (obj_bubble,pobj->x+6,pobj->y-2,0,0);
-			pobj->counter++; return (1);
+			pobj->counter++;
+			return (1);
 		case msg_draw:	drawshape (&gamevp,sh,pobj->x,pobj->y); break;
 		case msg_touch:
 			if (z==0) {
-				p_ouch(2,die_fish); snd_play (4,snd_enemykill1);
-				explode2 (n); killobj (n); return (1);
+				p_ouch(2,die_fish);
+				snd_play (4,snd_enemykill1);
+				explode2 (n);
+				killobj (n);
+				return (1);
 				};
 			if (kindflags[objs[z].objkind]&f_weapon) {
-				snd_play (4,snd_enemykill1); explode2 (n);
+				snd_play (4,snd_enemykill1);
+				explode2 (n);
 				addobj (obj_bullet,pobj->x-4,pobj->y+8,-4,-2);
 				addobj (obj_bullet,pobj->x-4,pobj->y+8,-4,0);
 				addobj (obj_bullet,pobj->x-4,pobj->y+8,-4,+2);
 				addobj (obj_bullet,pobj->x+11,pobj->y+8,+4,-2);
 				addobj (obj_bullet,pobj->x+11,pobj->y+8,+4,0);
 				addobj (obj_bullet,pobj->x+11,pobj->y+8,+4,+2);
-				killobj (n); killobj (z); return (1);
+				killobj (n);
+				killobj (z);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_text6 (int n, int msg, int z) {
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
 			if (pobj->counter>0) {
 				if (--pobj->counter<=0) {
-					killobj (n); return (1);
+					killobj (n);
+					return (1);
 					};
 				}; break;
 		case msg_draw:
@@ -117,12 +130,14 @@ int msg_text6 (int n, int msg, int z) {
 
 int msg_text8 (int n, int msg, int z) {
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
 			if (pobj->counter>0) {
 				if (--pobj->counter<=0) {
-					killobj (n); return (1);
+					killobj (n);
+					return (1);
 					};
 				}; break;
 		case msg_draw:
@@ -152,12 +167,13 @@ int msg_bridger (int n, int msg, int z) {
 			dochange=1; oldcell=dircell; newcell=0; break;
 		case msg_trigger:
 			if (board(xc,yc)==dircell)	{
-				newcell=0; oldcell=dircell;
+				newcell=0;
+				oldcell=dircell;
 				if (pobj->state==1) snd_play (2,snd_switchoff);
-				}
-			else newcell=dircell; {
-				oldcell=board(xc,yc);
-				if (pobj->state==1) snd_play (2,snd_switchon);
+				} else {
+					newcell=dircell;
+					oldcell=board(xc,yc);
+					if (pobj->state==1) snd_play (2,snd_switchon);
 				};
 			dochange=1;
 			if (objs[z].objkind==obj_pad) killobj (z);
@@ -172,8 +188,10 @@ int msg_bridger (int n, int msg, int z) {
 				};
 			while (board(xc,yc)==oldcell) {
 				setboard(xc,yc,newcell); xc+=pobj->xd; yc+=pobj->yd;
-				}; return (1);
-		};	return (0);
+				};
+				return (1);
+		};
+		return (0);
 	};
 
 int msg_door (int n, int msg, int z) {
@@ -199,7 +217,9 @@ int msg_door (int n, int msg, int z) {
 			if (pobj->statecount==0) return (0);
 			if (++pobj->statecount>16) {
 				drawcell (xc,yc-1); drawcell (xc,yc+1);
-				killobj (n); moddrawboard (); return (1);
+				killobj (n);
+				moddrawboard ();
+				return (1);
 				}; break;
 		case msg_draw:
 			if ((pobj->statecount==0)&&(pobj->state!=-1)) {
@@ -225,9 +245,14 @@ int msg_door (int n, int msg, int z) {
 					txt ("THE GATE OPENS",2,0);
 					setboard (xc,yc,board(xc+pobj->xd,yc+pobj->yd));
 					killobj (n);
-					if (objs[z].objkind==obj_pad) killobj (z); return (1);
+					if (objs[z].objkind==obj_pad) {
+						killobj (z);
+						}
+						return (1);
+					} else { 
+						txt ("YOU NEED A GATE KEY TO PASS",5,0);
+						break;
 					}
-				else txt ("YOU NEED A GATE KEY TO PASS",5,0); break;
 				};
 			switch (pobj->state) {
 				case 0: if (takeinv (inv_key0)) pobj->substate=1; break;
@@ -241,10 +266,14 @@ int msg_door (int n, int msg, int z) {
 				pobj->statecount=1;
 				for (c=0; c<=1; c++)	setboard(xc,yc+c,board(xc-1,yc+c));
 				setboard(xc,yc-1,board(xc-1,yc-1));
-				if (objs[z].objkind==obj_pad) killobj (z); return (1);
+				if (objs[z].objkind==obj_pad) {
+					killobj (z);
 				}
+				return (1);
+			}
 			else txt ((char*)doormsg[xr_random(4)],5,0);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_centexpl (int n, int msg, int z) {				// for centipede only
@@ -257,15 +286,19 @@ int msg_centexpl (int n, int msg, int z) {				// for centipede only
 			if (++pobj->yd>12) pobj->yd=12;
 			pobj->state=xr_random(6)+((pobj->xd>0)?9:1);
 			if (!trymovey(n,pobj->x+pobj->xd,pobj->y+pobj->yd)) {
-				pobj->yd=-pobj->yd; snd_play (1,snd_hopperland);
-				}; return (1);
+				pobj->yd=-pobj->yd;
+				snd_play (1,snd_hopperland);
+				};
+				return (1);
 		case msg_draw:
 			drawshape (&gamevp,sh+pobj->state,pobj->x,pobj->y); break;
 		case msg_touch: if (z!=0) return (0);
 			snd_play (3,snd_emeralds);
 			addobj (obj_flash,pobj->x-3,pobj->y-1,0,1);
-			playerkill (n); return (1);
-		}; return (0);
+			playerkill (n);
+			return (1);
+		};
+		return (0);
 	};
 
 int msg_addstep (int n, int msg, int z) {
@@ -308,9 +341,11 @@ int msg_addstep (int n, int msg, int z) {
 			snd_play (4,snd_switchon);
 			if (objs[z].objkind==obj_pad) {
 				addobj (obj_flash,objs[z].x-1,objs[z].y-3,0,0);
-				killobj (z); return (1);
+				killobj (z);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_pad (int n, int msg, int z) {
@@ -337,7 +372,8 @@ int msg_pad (int n, int msg, int z) {
 					sendtrig (pobj->counter,ourmsg,n);
 					}; pobj->zaphold=3; return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_spring (int n, int msg, int z) {
@@ -346,12 +382,15 @@ int msg_spring (int n, int msg, int z) {
 
 	switch (msg) {
 		case msg_update:
-			if (pobj->statecount>0) pobj->statecount--; return (1); break;
+			if (pobj->statecount>0) pobj->statecount--;
+			return (1);
+			break;
 		case msg_draw:
 			if (pobj->statecount>6) sh+=1;
 			else if (pobj->statecount>3) sh+=3;
 			else sh+=2;
-			drawshape (&gamevp,sh,pobj->x,pobj->y); break;
+			drawshape (&gamevp,sh,pobj->x,pobj->y);
+			break;
 		case msg_touch:
 			if ((objs[z].objkind==obj_player)&&(pobj->zaphold==0)) {
 				if ((objs[0].yd>0)&&((objs[0].y+objs[0].yl)>=(pobj->y+6))) {
@@ -365,7 +404,8 @@ int msg_spring (int n, int msg, int z) {
 					objs [0].substate=0;
 					snd_play (1,snd_spring);
 					pobj->zaphold=5;
-					pobj->statecount=10; return (1);
+					pobj->statecount=10;
+					return (1);
 					};
 				};
 		}; return (0);
@@ -378,18 +418,30 @@ int msg_arrow (int n, int msg, int z) {
 
 	switch (msg) {
 		case msg_update:
-			if (!onscreen(n)) {killobj (n); return (1);};
+			if (!onscreen(n)) {
+				killobj (n);
+				return (1);
+			};
 			pobj->counter=(pobj->counter+1)&7;
 			if (pobj->xd>0) pobj->xd++;
-			else pobj->xd--; 
+			else pobj->xd--;
 			if (!justmove (n,pobj->x+pobj->xd,pobj->y+
-				ydtab[pobj->counter/2])) killobj (n); return (1);
-		case msg_draw:	drawshape (&gamevp,sh+pobj->yd,pobj->x,pobj->y); break;
+				ydtab[pobj->counter/2])) {
+					killobj (n);
+					return (1);
+				}
+		/* FALLTHROUGH */
+		case msg_draw:
+			drawshape (&gamevp,sh+pobj->yd,pobj->x,pobj->y);
+			break;
 		case msg_touch:
 			if (z==0) {
-				hitplayer (n,0); killobj (n); return (1);
+				hitplayer (n,0);
+				killobj (n);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_masher (int n, int msg, int z) {
@@ -417,8 +469,11 @@ int msg_masher (int n, int msg, int z) {
 		case msg_draw:
 			drawshape (&gamevp,kindtable[obj_masher]*256+4+pobj->counter,
 				pobj->x,pobj->y); break;
-		case msg_touch: if (z==0) hitplayer (n,0); return (1);
-		}; return (0);
+		case msg_touch:
+			if (z==0) hitplayer (n,0);
+			return (1);
+		};
+		return (0);
 	};
 
 int msg_platform (int n, int msg, int z) {
@@ -467,7 +522,8 @@ int msg_platform (int n, int msg, int z) {
 					obj0->substate=2;					// In flight
 					obj0->xl=kindxl[obj_player];
 					pobj->substate=st_stand;
-					pobj->zaphold=10; return (1);
+					pobj->zaphold=10;
+					return (1);
 					};
 				if (fire2) {
 					fire2off=1;
@@ -478,7 +534,8 @@ int msg_platform (int n, int msg, int z) {
 					obj0->xl=kindxl[obj_player];
 					snd_play (2,snd_jump);
 					pobj->substate=st_stand;
-					pobj->zaphold=5; return (1);
+					pobj->zaphold=5;
+					return (1);
 					};
 				if (dx1!=0) {							// face left or right
 					obj0->xd=dx1;
@@ -495,8 +552,10 @@ int msg_platform (int n, int msg, int z) {
 				else obj0->yd=dy1;
 				if (pobj->yd<0) obj0->substate=0;
 				else if (pobj->yd>0) obj0->substate=1;
-				moveobj (0,obj0->x,obj0->y); 
-			}; if (onscreen(n)) return (1); break;
+				moveobj (0,obj0->x,obj0->y);
+			};
+			if (onscreen(n)) return (1);
+			break;
 		case msg_draw:
 			drawshape (&gamevp,kindtable[obj_platform]*256+13+
 				pobj->statecount/2,pobj->x,pobj->y); break;
@@ -512,15 +571,19 @@ int msg_platform (int n, int msg, int z) {
 			obj0->state=st_platform;
 			obj0->counter=6;
 			obj0->xl=kindxl[obj_player]+3;
-			snd_play (2,snd_land); return (1);
-		case msg_trigger: if (pobj->state==-1) return (0);
-			pobj->state=1-pobj->state; return (1);
-		}; return (0);
+			snd_play (2,snd_land);
+			return (1);
+		case msg_trigger:
+			if (pobj->state==-1) return (0);
+			pobj->state=1-pobj->state;
+			return (1);
+		};
+		return (0);
 	};
 
 int msg_checkpt (int n, int msg, int z) {
 	char temp[16];
-	objtype *pobj,*obj0;	
+	objtype *pobj,*obj0;
 	pobj=&(objs[n]); obj0=&(objs[0]);
 
 	switch (msg) {
@@ -562,11 +625,15 @@ int msg_checkpt (int n, int msg, int z) {
 						objs [0].statecount=0;
 						};
 					if (pobj->inside!=NULL) {
-						strcpy (newlevel,pobj->inside);
-						}; return (1);
+						//strcpy (newlevel,pobj->inside);
+						strncpy(newlevel, pobj->inside, sizeof(newlevel)-1);
+						newlevel[sizeof(newlevel)-1] = '\0';
+						};
+						return (1);
 				};
 			};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_elev (int n, int msg, int z) {
@@ -582,15 +649,18 @@ int msg_elev (int n, int msg, int z) {
 				(pobj->counter!=-1)) {
 				setboard(xc,yc+1,board(xc,yc));
 				setboard(xc+1,yc+1,board(xc+1,yc));
-				moveobj (n,pobj->x,pobj->y+16); return (1);
+				moveobj (n,pobj->x,pobj->y+16);
+				return (1);
 				};
 			if ((pobj->info1)&&(board(xc,yc+1)==elevl)) {
 				setboard(xc,yc+1,board(xc,yc));
 				setboard(xc+1,yc+1,board(xc+1,yc));
 				moveobj (n,pobj->x,pobj->y+16);
 				justmove (0,objs[0].x,yc*16-8);
-				pobj->info1=0; return (1);
-				};	break;
+				pobj->info1=0;
+				return (1);
+				};
+			break;
 		case msg_draw:	drawshape (&gamevp,sh,pobj->x,pobj->y); break;
 		case msg_touch:
 			if (objs[z].objkind==obj_player) {
@@ -613,9 +683,11 @@ int msg_elev (int n, int msg, int z) {
 					if (pobj->substate!=dy1) snd_play (2,snd_switchon);
 					if (board(xc,yc+1)==elevl) pobj->info1=1;
 					};
-				pobj->substate=dy1; return (1);
+				pobj->substate=dy1;
+				return (1);
 			};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_mapdemo (int n, int msg, int z) {
@@ -624,6 +696,7 @@ int msg_mapdemo (int n, int msg, int z) {
 	int nshlen[2]={4,3};
 	int c;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -631,7 +704,8 @@ int msg_mapdemo (int n, int msg, int z) {
 				pobj->x=gamevp.vpox+16+scrollxd;
 				pobj->y=gamevp.vpoy+10+scrollyd;
 				return (1);
-				}; break;
+				};
+			break;
 		case msg_draw:
 			if (pobj->info1==0) {
 				pobj->info1=1;
@@ -640,7 +714,8 @@ int msg_mapdemo (int n, int msg, int z) {
 			for (c=0; c<nshlen[pobj->xd]; c++) {
 				drawshape (&gamevp,sh+nshofs[pobj->xd]+c,pobj->x+c*16,pobj->y);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_key (int n, int msg, int z) {
@@ -678,11 +753,14 @@ int msg_key (int n, int msg, int z) {
 				};
 			if (pobj->zaphold==1) {
 				addobj (obj_flash,pobj->x-3,pobj->y-2,0,0);
-				killobj (n); snd_play (3,snd_getkey);
-				txt ((char*)inv_keymsg[pobj->state],3,0); return (1);
+				killobj (n);
+				snd_play (3,snd_getkey);
+				txt ((char*)inv_keymsg[pobj->state],3,0);
+				return (1);
 				}
 			else txt ("You already have a key of that COLOR!",5,0);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_heart (int n, int msg, int z) {
@@ -707,8 +785,10 @@ int msg_heart (int n, int msg, int z) {
 			snd_play (3,snd_getheart);
 			if (first_heart) {
 				first_heart=0; txt ("HEARTS GIVE YOU HEALTH",7,0);
-				}; return (1);
-			}; return (0);
+				};
+				return (1);
+			};
+			return (0);
 		};
 
 int msg_emerald (int n, int msg, int z) {
@@ -729,8 +809,10 @@ int msg_emerald (int n, int msg, int z) {
 			if ((first_emerald)&&!macplay) {
 //				txt ("EMERALDS CAN BE USED TO BUY ITEMS",7,0);
 				first_emerald=0; dotextmsg (39,0);
-				}; return (1);
-			}; return (0);
+				};
+				return (1);
+			};
+			return (0);
 		};
 
 int msg_eagle (int n, int msg, int z) {
@@ -753,25 +835,31 @@ int msg_eagle (int n, int msg, int z) {
 				};
 			if (pobj->substate==pobj->yd) {
 				if ((!justmove(n,pobj->x+pobj->xd,pobj->y-1))||(!onscreen(n))) {
-					killobj (n); return (1);
+					killobj (n);
+					return (1);
 					};
-				}; return ((pobj->statecount&1)==0);
+				};
+				return ((pobj->statecount&1)==0);
 		case msg_draw:
 			if ((designflag)||(pobj->info1>0)) {
 				drawshape (&gamevp,sh+pobj->statecount/2,pobj->x,pobj->y);
-				}; break;
+				};
+			break;
 		case msg_touch:
 			if ((pobj->info1==0)||(pobj->info1==2)||(z!=0)) return (0);
-			pobj->info1=2; return (1);
+			pobj->info1=2;
+			return (1);
 		case msg_trigger:
 			snd_play (4,snd_geticon);
 			addobj (obj_hithero,pobj->x+5,pobj->y+2,0,0);
 			addobj (obj_flash,pobj->x-8,pobj->y-4,0,0);
 			addobj (obj_flash,pobj->x,pobj->y+12,0,0);
 			addobj (obj_flash,pobj->x+12,pobj->y+6,0,0);
-			pobj->info1=1; if (objs[z].objkind==obj_pad) killobj (z);
+			pobj->info1=1;
+			if (objs[z].objkind==obj_pad) killobj (z);
 			return (1);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_epic (int n, int msg, int z) {
@@ -786,11 +874,14 @@ int msg_epic (int n, int msg, int z) {
 				addscore (25,pobj->x,pobj->y);
 				if (++pobj->state>12) {
 					explode1 (pobj->x,pobj->y,5,0);
-					killobj (n); snd_play (3,snd_stalagcrash);
+					killobj (n);
+					snd_play (3,snd_stalagcrash);
 					}
-				else snd_play (3,snd_getfruit); return (1);
+				else snd_play (3,snd_getfruit);
+				return (1);
 				};
-			}; return (0);
+			};
+			return (0);
 		};
 
 int msg_box (int n, int msg, int z) {
@@ -808,12 +899,14 @@ int msg_box (int n, int msg, int z) {
 				if (trymove(n,pobj->x,pobj->y+pobj->yd)!=1) {
 					trymove(n,pobj->x,((pobj->y+pobj->yd-1)&0xfff0)+
 					(16-kindyl[obj_box]));
-					}; return (1);
+					};
+					return (1);
 				}
 			else {
 				if (pobj->yd!=0) snd_play (2,snd_bouldland);
 				pobj->yd=0;
-				}; break;
+				};
+				break;
 		case msg_draw:
 			if (designflag) {
 				drawshape (&gamevp,0x017f,pobj->x+4,pobj->y+4);
@@ -821,7 +914,8 @@ int msg_box (int n, int msg, int z) {
 			else if (pobj->substate==1) {
 				drawshape (&gamevp,kindtable[obj_box]*256+24+pobj->xd,
 					pobj->x,pobj->y);
-				};	break;
+				};
+				break;
 		case msg_touch:
 			if ((z==0)&&(first_box)&&(pobj->substate==1)) {
 				if (!macplay) {
@@ -868,25 +962,33 @@ int msg_box (int n, int msg, int z) {
 				explode1 (pobj->x,pobj->y,4,0);
 				if (pobj->yd!=0) addscore (50,pobj->x,pobj->y);
 				killobj (n);
-				if (objs[z].objkind!=obj_fireball) killobj (z); return (1);
-				}; break;
-		case msg_trigger: 
+				if (objs[z].objkind!=obj_fireball) killobj (z);
+				return (1);
+				};
+				break;
+		case msg_trigger:
 			pobj->substate=1;
-			if (objs[z].objkind==obj_pad) killobj (z); return (1);
-		}; return (0);
+			if (objs[z].objkind==obj_pad) killobj (z);
+			return (1);
+		};
+		return (0);
 	};
 
 int msg_score (int n, int msg, int z) {
-	int c,sh;
+	int c;
+	//int sh;
 	char score[12];
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
 			if ((--pobj->counter<0)||(!onscreen(n))) killobj (n);
 			else {
-				pobj->x+=pobj->xd; pobj->y+=pobj->yd;
-				pobj->yd--;	return (1);
+				pobj->x+=pobj->xd;
+				pobj->y+=pobj->yd;
+				pobj->yd--;
+				return (1);
 				}; break;
 		case msg_draw:
 			fontcolor (&gamevp,2+(pobj->counter&3),-1);
@@ -895,7 +997,8 @@ int msg_score (int n, int msg, int z) {
 //				wprint (&gamevp,pobj->x+8*c,pobj->y,1,score);
 				drawshape (&gamevp,0x0300+score[c]-48,pobj->x+8*c,pobj->y);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_token (int n, int msg, int z) {
@@ -910,7 +1013,8 @@ int msg_token (int n, int msg, int z) {
 				pobj->xl=30; pobj->yl=38;
 				};
 			if (++pobj->statecount>=8) pobj->statecount=0;
-			justmove(n,pobj->x,pobj->y+ydtab[pobj->statecount]); return (1);
+			justmove(n,pobj->x,pobj->y+ydtab[pobj->statecount]);
+			return (1);
 		case msg_draw:
 			if (pobj->state==6) {
 				if (pobj->substate==0) {
@@ -953,10 +1057,14 @@ int msg_token (int n, int msg, int z) {
 						}
 					else addinv (pobj->state);
 					killobj(n);
-					}; statmodflg|=mod_screen; return (1);
-				}; break;
+					};
+					statmodflg|=mod_screen;
+					return (1);
+				};
+				break;
 		case msg_trigger: pobj->substate=0;
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_switch (int n, int msg, int z) {
@@ -974,22 +1082,33 @@ int msg_switch (int n, int msg, int z) {
 					txt ("Press UP/DOWN to toggle switch",7,0);
 					};
 				if ((dy1<0)&&(pobj->state==1)) {
-					pobj->state=0; snd_play (2,snd_switchon);
-					if (pobj->xd==1) sendtrig (pobj->counter,msg_trigger,n);
-					else sendtrig (pobj->counter,msg_trigon,n); return (1);
+					pobj->state=0;
+					snd_play (2,snd_switchon);
+					if (pobj->xd==1) {
+						sendtrig (pobj->counter,msg_trigger,n);
+					} else {
+						sendtrig (pobj->counter,msg_trigon,n);
+						return (1);
 					}
+				}
 				else if ((dy1>0)&&(pobj->state==0)) {
 					pobj->state=1; snd_play (2,snd_switchoff);
-					if (pobj->xd==1) sendtrig (pobj->counter,msg_trigger,n);
-					else sendtrig (pobj->counter,msg_trigoff,n); return (1);
+					if (pobj->xd==1) {
+						sendtrig (pobj->counter,msg_trigger,n);
+					} else {
+						sendtrig (pobj->counter,msg_trigoff,n);
+					}
+					return (1);
 					};
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_button (int n, int msg, int z) {
 	int sh=kindtable[obj_button]*256+9;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_draw:
@@ -1045,9 +1164,12 @@ int msg_bullet (int n, int msg, int z) {
 			if (pobj->xd>12) pobj->xd=12;
 			if (pobj->xd<-12) pobj->xd=-12;
 			if ((!onscreen(n))||((pobj->xd==0)&&(pobj->yd==0))) {
-				killobj (n); return (1);
+				killobj (n);
+				return (1);
 				};
-			if (!justmove (n,pobj->x+pobj->xd,pobj->y+pobj->yd)) killobj (n);
+			if (!justmove (n,pobj->x+pobj->xd,pobj->y+pobj->yd)) {
+				killobj (n);
+			}
 			return (1);
 		case msg_draw:
 			if (pobj->state==0) drawshape (&gamevp,sh+39,pobj->x,pobj->y);
@@ -1057,10 +1179,12 @@ int msg_bullet (int n, int msg, int z) {
 			if (objs[z].objkind==obj_heroswim) {
 				p_ouch(1,die_fish);
 				addobj (obj_hithero,objs[0].x,objs[0].y,0,0);
-				killobj (n); return (1);
+				killobj (n);
+				return (1);
 				};
 			if (z==0) {hitplayer (n,0); killobj (n); return (1);}
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_bonus (int n, int msg, int z) {
@@ -1136,7 +1260,9 @@ int msg_bonus (int n, int msg, int z) {
 						kindscore[pobj->objkind]=100; snd_play (3,snd_getheart);
 						}; break;
 				case 13:								// Journal Entries
-					dotextmsg (pobj->counter,dialog); killobj (n); return (0);
+					dotextmsg (pobj->counter,dialog);
+					killobj (n);
+					return (0);
 				case 14:
 					if ((first_fruit)&&!macplay) {
 						first_fruit=0; dotextmsg (38,0);
@@ -1169,13 +1295,15 @@ int msg_rock (int n, int msg, int z) {
 	int sh=kindtable[obj_rock]*256+20;
 	int c,obj,closeobj,objdist,dist;
 	int ax=0; int ay=0;
-	objtype *pobj; pobj=&(objs[n]);
+	objtype *pobj;
+	pobj=&(objs[n]);
 
 	switch (msg) {
 		case msg_update:
 //			pobj->counter=(pobj->counter+sgn(pobj->xd))&3;
 			if ((++pobj->substate>=64)||(!onscreen(n))) {
-				killobj (n); return (1);
+				killobj (n);
+				return (1);
 				};
 			closeobj=-1; objdist=32767;
 			for (c=0; c<numscrnobjs; c++) {
@@ -1205,10 +1333,16 @@ int msg_rock (int n, int msg, int z) {
 				snd_play (1,snd_rockbounce);
 				if ((c==pobj->y)||(!justmove(n,pobj->x,c))) pobj->yd=-pobj->yd;
 				};
-			if (!justmove(n,pobj->x,pobj->y)) killobj (n); return (1);
-		case msg_draw: drawshape (&gamevp,sh,pobj->x,pobj->y); break;
+			if (!justmove(n,pobj->x,pobj->y)) killobj (n);
+			return (1);
+		case msg_draw:
+			drawshape (&gamevp,sh,pobj->x,pobj->y);
+			break;
 		case msg_touch:
-			if ((z==0)&&(pobj->substate>7)) {killobj (n); return (1);}
+			if ((z==0)&&(pobj->substate>7)) {
+				killobj (n);
+				return (1);
+				}
 			else if (kindflags[objs[z].objkind]&f_killable) {
 				killobj(n);
 				switch (objs[z].objkind) {
@@ -1216,26 +1350,34 @@ int msg_rock (int n, int msg, int z) {
 					case obj_hopper:
 					case obj_bee:
 						snd_play (4,snd_hopperdie);
-						explode1 (pobj->x,pobj->y,4,1); break;
+						explode1 (pobj->x,pobj->y,4,1);
+						break;
 					case obj_skull:
 						snd_play (4,snd_enemykill3);
-						explode1 (objs[z].x,objs[z].y,5,1); break;
+						explode1 (objs[z].x,objs[z].y,5,1);
+						break;
 					default:
 						snd_play (4,snd_enemykill1);
 						explode1 (objs[z].x,objs[z].y,5,0);
 					};
-				playerkill(z); return (1);
+				playerkill(z);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_fireball (int n, int msg, int z) {
 	int sh=kindtable[obj_fireball]*256+34;
-	objtype *pobj; pobj=&(objs[n]);
+	objtype *pobj;
+	pobj=&(objs[n]);
 
 	switch (msg) {
 		case msg_update:
-			if (!onscreen(n)) {killobj (n); return (1);};
+			if (!onscreen(n)) {
+				killobj (n);
+				return (1);
+				};
 			pobj->counter=(pobj->counter+1)&3;
 			if (pobj->xd>0) pobj->xd++;
 			else pobj->xd--;
@@ -1243,13 +1385,18 @@ int msg_fireball (int n, int msg, int z) {
 			if (!justmove (n,pobj->x+pobj->xd,pobj->y+pobj->yd)) {
 				addobj (obj_fireexpl,pobj->x+((pobj->xd>0)?12:-20),
 					pobj->y-5,0,0);
-				if ((board(pobj->x+pobj->xd,pobj->y+pobj->yd))!=breakwall) {
-					snd_play (2,snd_hitwall); killobj (n);
+				//if ((board(pobj->x+pobj->xd,pobj->y+pobj->yd))!=breakwall) {
+				int tx = (pobj->x + pobj->xd) >> 4;
+				int ty = (pobj->y + pobj->yd) >> 4;
+				if (board(tx, ty) != breakwall) {
+					snd_play (2,snd_hitwall);
+					killobj (n);
 					};
-				};	return ((pobj->counter&1)==0);
+				};
+				return ((pobj->counter&1)==0);
 		case msg_draw:
-			drawshape (&gamevp,sh+pobj->counter/2+((pobj->xd>0)?2:0),
-				pobj->x,pobj->y); break;
+			drawshape (&gamevp,sh+pobj->counter/2+((pobj->xd>0)?2:0),pobj->x,pobj->y);
+			break;
 		case msg_touch:
 			if (kindflags[objs[z].objkind]&f_fireball) {
 //				killobj (n);
@@ -1263,15 +1410,21 @@ int msg_fireball (int n, int msg, int z) {
 				switch (objs[z].objkind) {
 					case obj_bat:
 					case obj_hopper:
-					case obj_bee: snd_play (4,snd_hopperdie); break;
+					case obj_bee:
+						snd_play (4,snd_hopperdie);
+						break;
 					case obj_skull:
 						snd_play (4,snd_enemykill3);
-						explode1 (objs[z].x,objs[z].y,5,1); break;
-					default: snd_play (4,snd_enemykill1);
+						explode1 (objs[z].x,objs[z].y,5,1);
+						break;
+					default:
+						snd_play (4,snd_enemykill1);
 					};
-				playerkill(z); return (1);
+				playerkill(z);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_laser (int n, int msg, int z) {
@@ -1281,12 +1434,14 @@ int msg_laser (int n, int msg, int z) {
 	switch (msg) {
 		case msg_update:
 			if (!onscreen(n)) {
-				killobj(n); return (1);
+				killobj(n);
+				return (1);
 				};
 			if (!justmove (n,pobj->x+pobj->xd,pobj->y)) {
 				addobj (obj_hitwall,pobj->x+(pobj->xd>0?12:-12),pobj->y-5,0,0);
 				snd_play (2,snd_hitwall);
-				killobj(n); return (1);
+				killobj(n);
+				return (1);
 				};
 			if (pobj->xd>0) pobj->xd++;
 			else pobj->xd--;
@@ -1321,12 +1476,14 @@ int msg_torpedo (int n, int msg, int z) {
 	switch (msg) {
 		case msg_update:
 			if (!onscreen(n)) {
-				killobj(n); return (1);
+				killobj(n);
+				return (1);
 				};
 			if (!justmove (n,pobj->x+pobj->xd,pobj->y)) {
 				addobj (obj_hitwall,pobj->x+(pobj->xd>0?8:-12),pobj->y-4,0,0);
 				snd_play (2,snd_hitwall);
-				killobj(n); return (1);
+				killobj(n);
+				return (1);
 				};
 			if (pobj->xd>0) pobj->xd++;
 			else pobj->xd--;
@@ -1341,9 +1498,12 @@ int msg_torpedo (int n, int msg, int z) {
 				addobj (obj_bubble,pobj->x,pobj->y+1,0,0);
 				addobj (obj_bubble,pobj->x+4,pobj->y+2,0,0);
 				addobj (obj_bubble,pobj->x+6,pobj->y+4,0,0);
-				snd_play (4,snd_fishdie); playerkill(z); return (1);
+				snd_play (4,snd_fishdie);
+				playerkill(z);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 void explode1 (int x, int y, int num, int flg) {
@@ -1371,6 +1531,7 @@ void explode2 (int n) {
 int msg_fragexpl (int n, int msg, int z) {				// fragments
 	int sh=kindtable[obj_fragexpl]*256+50;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -1391,10 +1552,12 @@ int msg_fireexpl (int n, int msg, int z) {				// fireball explosion
 	int sh=kindtable[obj_fireexpl]*256+45;
 	const int exptab[9]={0,1,0,1,0,1,2,3,4};
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
-			if ((++pobj->counter>=9)||(!onscreen(n))) killobj (n); return (1);
+			if ((++pobj->counter>=9)||(!onscreen(n))) killobj (n);
+			return (1);
 		case msg_draw:
 			drawshape (&gamevp,sh+exptab[pobj->counter],pobj->x,pobj->y);
 		}; return (0);
@@ -1405,13 +1568,15 @@ int msg_flash (int n, int msg, int z) {				// for bonus items
 	const int expltab[16]={3,3,2,2,1,1,0,0,0,0,1,1,2,2,3,3};
 	const int expltab2[16]={0,0,1,1,2,2,3,3,3,3,2,2,1,1,0,0};
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
 			if ((pobj->yd==1)&&(pobj->info1==0)) {
 				pobj->info1=1; pobj->xl=14; pobj->yl=15;
 				};
-			if ((++pobj->counter>=16)||(!onscreen(n))) killobj (n); return (1);
+			if ((++pobj->counter>=16)||(!onscreen(n))) killobj (n);
+			return (1);
 		case msg_draw:
 			if (pobj->yd==0) {
 				drawshape (&gamevp,sh+59+expltab[pobj->counter],pobj->x,pobj->y);
@@ -1419,16 +1584,19 @@ int msg_flash (int n, int msg, int z) {				// for bonus items
 			else {
 				drawshape (&gamevp,sh+68+expltab2[pobj->counter],pobj->x,pobj->y);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_hitwall (int n, int msg, int z) {
 	int sh=kindtable[obj_hitwall]*256+55;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
-			if ((++pobj->counter>=7)||(!onscreen(n))) killobj (n); return (1);
+			if ((++pobj->counter>=7)||(!onscreen(n))) killobj (n);
+			return (1);
 		case msg_draw:
 			drawshape (&gamevp,sh+(pobj->counter/2),pobj->x,pobj->y);
 		}; return (0);
@@ -1493,7 +1661,8 @@ int msg_stalag (int n, int msg, int z) {
 				if (!trymovey(n,pobj->x,pobj->y+pobj->yd)) {
 					snd_play (3,snd_stalagcrash);
 					explode1 (pobj->x,pobj->y+10,5,1);
-					killobj (n); return (1);
+					killobj (n);
+					return (1);
 					};
 				if ((pobj->yd+=2)>16) {pobj->yd=16; return (1);};
 				}; break;
@@ -1514,9 +1683,11 @@ int msg_stalag (int n, int msg, int z) {
 			if (pobj->yd==0) {
 				pobj->yd=2;
 				snd_play (2,snd_rockbounce);
-				killobj(z); return (1);
+				killobj(z);
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_boulder (int n, int msg, int z) {
@@ -1560,9 +1731,11 @@ int msg_boulder (int n, int msg, int z) {
 				snd_play (2,snd_hitwall);
 				explode1 (pobj->x,pobj->y,5,1);
 				killobj (z);
-				pobj->state++; return (1);
+				pobj->state++;
+				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_ball (int n, int msg, int z) {
@@ -1612,15 +1785,18 @@ int msg_ball (int n, int msg, int z) {
 				}; return (1);
 		case msg_draw:
 			drawshape (&gamevp,sh+pobj->counter,pobj->x,pobj->y); break;
-		case msg_touch: 
+		case msg_touch:
 			if (z==0) {
 				hitplayer (n,0);
 				if (pobj->state==1) {
 					snd_play (4,snd_enemykill1);
-					explode2 (n); killobj (n);
-					}; return (1);
+					explode2 (n);
+					killobj (n);
+					};
+					return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_fire (int n, int msg, int z) {
@@ -1640,12 +1816,14 @@ int msg_fire (int n, int msg, int z) {
 				p_ouch (2,die_ash); explode2(0); pobj->state=1;		// safe now
 				return (1);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_searock (int n, int msg, int z) {
 	int sh=kindtable[obj_searock]*256+19;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -1656,25 +1834,29 @@ int msg_searock (int n, int msg, int z) {
 			if ((pobj->state==0)||(designflag)) {
 				drawshape (&gamevp,sh,pobj->x,pobj->y);
 				};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_torch (int n, int msg, int z) {
 	int sh=kindtable[obj_torch]*256+12;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update: pobj->counter=(pobj->counter+1)&7;
 			return((pobj->counter&1)==0);
 		case msg_draw:
 			drawshape (&gamevp,sh+pobj->counter/2,pobj->x,pobj->y);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_cloud (int n, int msg, int z) {
 	int sh=kindtable[obj_cloud]*256+33;
 	int destx;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update: if (pobj->xd==0) return (0);
@@ -1684,27 +1866,31 @@ int msg_cloud (int n, int msg, int z) {
 				if (!justmove (n,destx,pobj->y)) pobj->xd=-pobj->xd;
 				}; return (1);
 		case msg_draw: drawshape (&gamevp,sh,pobj->x,pobj->y);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_hithero (int n, int msg, int z) {				// when player gets hit
 	int sh=kindtable[obj_hithero]*256+63;
 	const int exptab[11]={4,4,3,2,1,0,1,2,3,4,4};
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
-			if ((++pobj->counter>=11)||(!onscreen(n))) killobj (n); return (1);
+			if ((++pobj->counter>=11)||(!onscreen(n))) killobj (n);
+			return (1);
 		case msg_draw:
 			drawshape (&gamevp,sh+exptab[pobj->counter],pobj->x,pobj->y);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_spikes (int n, int msg, int z) {
 	int sh=kindtable[obj_spikes]*256;
 	const int spiketab[8]={1,2,3,3,3,2,1,0};
 	objtype *pobj; pobj=&(objs[n]);
-	
+
 	switch (msg) {
 		case msg_update:
 			if (pobj->info1==0) {
@@ -1729,12 +1915,15 @@ int msg_spikes (int n, int msg, int z) {
 			sh+=(25+pobj->state+(pobj->yd*4));
 			drawshape (&gamevp,sh,pobj->x,pobj->y); break;
 		case msg_touch:
-			if ((z==0)&&(pobj->state>0)) hitplayer (n,0); return (1);
-		}; return (0);
+			if ((z==0)&&(pobj->state>0)) hitplayer (n,0);
+			return (1);
+		};
+		return (0);
 	};
 
 int msg_transport (int n, int msg, int z) {
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_draw:									// Invisible!
@@ -1744,8 +1933,10 @@ int msg_transport (int n, int msg, int z) {
 		case msg_trigger:
 			moveobj (0,pobj->x,pobj->y-24);
 			setorigin(); moddrawboard();
-			if (pobj->xd==1) killobj (n); return (1);
-		}; return (0);
+			if (pobj->xd==1) killobj (n);
+			return (1);
+		};
+		return (0);
 	};
 
 int msg_transpad (int n, int msg, int z) {
@@ -1793,6 +1984,7 @@ int msg_transpad (int n, int msg, int z) {
 int msg_effects (int n, int msg, int z) {		// yd FREE
 	int c,q;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -1813,20 +2005,24 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 					else if (pl.health==1) {
 						for (c=207; c<234; c++) {	// change all red to max
 							setcolor (c,63,vgapal[c*3+1],vgapal[c*3+2]);
-							}; flush_staged_palette_changes();
+							};
+						flush_staged_palette_changes();
 						}
-					else if (invcount(inv_jump)) setcolor (233,0,15,52); flush_staged_palette_changes();
+					else if (invcount(inv_jump)) {
+						setcolor (233,0,15,52);
+						flush_staged_palette_changes();
 					}
-				else {
+				} else {
 					pobj->substate=0;
 					setcolor (249,60,0,0);
 					flush_staged_palette_changes();
 					if ((pobj->info1>0)||(pl.health==1)) {
 						pl.ouched=-1; statmodflg|=mod_screen;
 						}
-					else if (invcount(inv_jump))
+					else if (invcount(inv_jump)) {
 						setcolor (233,8,8,8);		// change boots back to normal
 						flush_staged_palette_changes();
+						}
 					};
 				};
 			switch (pobj->counter) {
@@ -1871,65 +2067,82 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 			if (pobj->state==-1) return (0);
 			switch (pobj->state) {
 				case 0: setcolor (250,0,0,0);			 		// black sky
-					setcolor (251,0,0,0); pobj->state=-1; flush_staged_palette_changes(); break;
+					setcolor (251,0,0,0);
+					pobj->state=-1;
+					flush_staged_palette_changes();
+					break;
 				case 1:									// simulate lightning
 					if (xr_random (25)==0) {
 						pobj->zaphold=3;
 						setcolor (250,60,60,63);
-					  flush_staged_palette_changes();
-						if (pobj->xd==0) setcolor (251,60,60,63); flush_staged_palette_changes();
+						if (pobj->xd==0) setcolor (251,60,60,63);
+						flush_staged_palette_changes();
 //						snd_play (2,snd_thunder1+xr_random(3));
 						};
 					if (pobj->zaphold==0) {
 						pobj->zaphold=-1;
-						setcolor (250,0,0,0); setcolor (251,0,0,0); flush_staged_palette_changes();
+						setcolor (250,0,0,0); setcolor (251,0,0,0);
+						flush_staged_palette_changes();
 						}; break;
-				case 2: setcolor (250,0,0,32); flush_staged_palette_changes(); // dk. blue sky
-					if (pobj->xd==0) setcolor (251,0,0,32); flush_staged_palette_changes(); break;
+				case 2: setcolor (250,0,0,32);					// dk. blue sky
+					if (pobj->xd==0) setcolor (251,0,0,32);
+					flush_staged_palette_changes();
+					break;
 				case 3:												// lt. blue sky
 					setcolor (176,8,16,25); setcolor (177,8,20,29);
 					setcolor (178,12,24,33); setcolor (179,16,28,41);
 					setcolor (180,20,32,45); setcolor (181,24,40,49);
 					setcolor (182,28,44,57); setcolor (183,36,48,60);
+					if (pobj->yd==0) setcolor (250,36,48,60);
+					if (pobj->xd==0) setcolor (251,36,48,60);
 					flush_staged_palette_changes();
-					if (pobj->yd==0) setcolor (250,36,48,60); flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,36,48,60); flush_staged_palette_changes(); break;
+					break;
 				case 4:												// yellow sky
 					setcolor (176,32,0,0); setcolor (177,40,0,0);
 					setcolor (178,52,0,0); setcolor (179,60,0,0);
 					setcolor (180,60,28,0); setcolor (181,60,40,0);
 					setcolor (182,60,52,0); setcolor (183,60,60,0);
+					if (pobj->yd==0) setcolor (250,60,60,0);
+					if (pobj->xd==0) setcolor (251,60,60,0);
 					flush_staged_palette_changes();
-					if (pobj->yd==0) setcolor (250,60,60,0); flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,60,60,0); flush_staged_palette_changes(); break;
+					break;
 				case 5:												// emerald sky
 					setcolor (176,0,12,12); setcolor (177,0,18,17);
 					setcolor (178,0,25,23); setcolor (179,0,32,27);
 					setcolor (180,0,39,32); setcolor (181,0,46,35);
 					setcolor (182,0,53,38); setcolor (183,0,60,40);
+					if (pobj->yd==0) setcolor (250,0,60,40);
+					if (pobj->xd==0) setcolor (251,0,60,40);
 					flush_staged_palette_changes();
-					if (pobj->yd==0) setcolor (250,0,60,40); flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,0,60,40); flush_staged_palette_changes(); break;
-				case 6: setcolor (250,32,32,24); flush_staged_palette_changes(); // olive green
-					if (pobj->xd==0) setcolor (251,32,32,24); flush_staged_palette_changes(); break;
+					break;
+				case 6: setcolor (250,32,32,24);					// olive green
+					if (pobj->xd==0) setcolor (251,32,32,24);
+					flush_staged_palette_changes();
+					break;
 				case 7:												// violet sky
 					setcolor (176,13,5,22); setcolor (177,18,8,27);
 					setcolor (178,23,13,33); setcolor (179,29,19,39);
 					setcolor (180,35,25,45); setcolor (181,42,32,51);
 					setcolor (182,49,40,57); setcolor (183,57,50,63);
+					if (pobj->yd==0) setcolor (250,57,50,63);
+					if (pobj->xd==0) setcolor (251,57,50,63);
 					flush_staged_palette_changes();
-					if (pobj->yd==0) setcolor (250,57,50,63); flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,57,50,63); flush_staged_palette_changes(); break;
+					break;
 				case 8: setcolor (250,23,23,23);				// factory grey
+					if (pobj->xd==0) setcolor (251,23,23,23);
 					flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,23,23,23); flush_staged_palette_changes(); break;
+					break;
 				case 9: setcolor (250,12,23,63);		 		// royal blue
+					if (pobj->xd==0) setcolor (251,12,23,63);
 					flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,12,23,63); flush_staged_palette_changes(); break;
+					break;
 				case 10: setcolor (250,20,20,23);			// factory grey v3
+					if (pobj->xd==0) setcolor (251,20,20,23);
 					flush_staged_palette_changes();
-					if (pobj->xd==0) setcolor (251,20,20,23); flush_staged_palette_changes(); break;
-				}; if (pobj->state>1) pobj->state=-1; break;
+					break;
+				};
+				if (pobj->state>1) pobj->state=-1;
+				break;
 		case msg_draw:
 			if (designflag) drawshape (&gamevp,0x017e,pobj->x+4,pobj->y+4);
 		}; return (0);
@@ -1937,20 +2150,23 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 
 int msg_bubble (int n, int msg, int z) {
 	int sh=kindtable[obj_bubble]*256+16;
-	int c;
+	//int c;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
 			if (xr_random(15)==0) pobj->counter++;
 			if ((pobj->counter>2)||(!onscreen(n))) killobj (n);
 			else {
-				if (!fishdo (n,pobj->x+xr_random(3)-1,
-					pobj->y-pobj->counter-1)) killobj(n);
-				}; return (1);
+				if (!fishdo (n,pobj->x+xr_random(3)-1,pobj->y-pobj->counter-1))
+					killobj(n);
+				};
+				return (1);
 		case msg_draw:
 			drawshape (&gamevp,sh+pobj->counter,pobj->x,pobj->y);
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_txtmsg (int n, int msg, int z) {
@@ -1975,7 +2191,8 @@ int msg_txtmsg (int n, int msg, int z) {
 
 int msg_front (int n, int msg, int z) {
 	int sh=kindtable[obj_front]*256;
-	int nl,flash;
+	int nl;
+	//int flash;
 	int mod1=0;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -1996,7 +2213,10 @@ int msg_front (int n, int msg, int z) {
 			if (pobj->info1>=40) {						// reactor destroyed
 				pobj->substate=(pobj->substate+1)&7;
 				if (pobj->substate==0) dim(); else undim();
-				if (pobj->counter==2) setcolor (250,20,20,23); flush_staged_palette_changes();
+				if (pobj->counter==2) {
+					setcolor (250,20,20,23);
+					flush_staged_palette_changes();
+					}
 				explode1 (pobj->x+xr_random(36+((pobj->state==14)?20:0)),
 					pobj->y+xr_random(36+((pobj->state==14)?20:0)),1,1);
 				explode1 (pobj->x+xr_random(36+((pobj->state==14)?20:0)),
@@ -2103,6 +2323,7 @@ int msg_front (int n, int msg, int z) {
 int msg_timerpad (int n, int msg, int z) {
 	int sh=kindtable[obj_timerpad]*256;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -2165,15 +2386,18 @@ int msg_timerpad (int n, int msg, int z) {
 
 int msg_turret (int n, int msg, int z) {
 	int sh=kindtable[obj_turret]*256+11;
-	int c,dx,dy,newx,newy;
+	int c,dx,dy;
 	int mod1=0;
 	objtype *pobj; pobj=&(objs[n]);
+	int newx = pobj->x;
+	int newy = pobj->y;
 
 	switch (msg) {
 		case msg_update:
 			if (pobj->state==1) return (0);
 			pointvect (0,n,&dx,&dy,3);
-			if (dx<-2) dx=-2; if (dx>2) dx=2;
+			if (dx<-2) dx=-2;
+			if (dx>2) dx=2;
 			if (dx!=pobj->xd) {pobj->xd=dx; mod1=1;};
 			if (pobj->statecount==32) {
 				for (c=168; c<172; c++) {				// change all blue to max
@@ -2202,10 +2426,12 @@ int msg_turret (int n, int msg, int z) {
 			if (kindflags[objs[z].objkind]&f_weapon) {
 				explode1 (pobj->x+xr_random(16),pobj->y+(8),4,1);
 				snd_play (2,snd_hitwall);
-				if (objs[z].objkind!=obj_fireball) killobj (z); return (1);
+				if (objs[z].objkind!=obj_fireball) killobj (z);
+				return (1);
 				};
 			if (pobj->state==1) return (0);
-			if (z==0) hitplayer (n,0); return (1);
+			if (z==0) hitplayer (n,0);
+			return (1);
 		case msg_trigger: pobj->state=1-pobj->state; return (1);
 		}; return (0);
 	};
@@ -2234,6 +2460,7 @@ int msg_icons (int n, int msg, int z) {
 int msg_story1 (int n, int msg, int z) {
 	int sh=kindtable[obj_story1]*256;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	if (msg==msg_draw) {
 		drawshape (&gamevp,sh+pobj->state,pobj->x+pobj->xd*4,
@@ -2244,6 +2471,7 @@ int msg_story1 (int n, int msg, int z) {
 int msg_story2 (int n, int msg, int z) {
 	int sh=kindtable[obj_story2]*256;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	if (msg==msg_draw) {
 		drawshape (&gamevp,sh+pobj->state,pobj->x+pobj->xd*4,
@@ -2278,8 +2506,10 @@ int msg_map (int n, int msg, int z) {
 			else drawshape (&gamevp,sh+pobj->state,pobj->x+pobj->xd,
 				pobj->y+pobj->yd); break;
 		case msg_touch:
-			if ((z==0)&&(pobj->substate==0)) pobj->substate=1; return (1);
-		}; return (0);
+			if ((z==0)&&(pobj->substate==0)) pobj->substate=1;
+			return (1);
+		};
+		return (0);
 	};
 
 //int msg_nullkind (int x, int y, int msg) {return (0);};

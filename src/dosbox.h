@@ -17,6 +17,7 @@ typedef   int32_t Bit32s;
 
 class MixerChannel {
 	public:
+	virtual ~MixerChannel() {}
 	virtual void AddSamples_m32(Bitu samples, Bit32s *buffer) = 0;
 	virtual void AddSamples_s32(Bitu samples, Bit32s *buffer) = 0;
 };

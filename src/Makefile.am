@@ -45,8 +45,8 @@ EXTRA_xrfile01_SOURCES = $(EXTRA_CORE_FILES)
 EXTRA_xrfile02_SOURCES = $(EXTRA_CORE_FILES)
 EXTRA_xrfile03_SOURCES = $(EXTRA_CORE_FILES)
 
-AM_CPPFLAGS = $(sdl_CFLAGS) -Wno-write-strings -fpermissive $(libgamemusic_CFLAGS)
-AM_LDFLAGS = $(sdl_LIBS) $(libgamemusic_LIBS)
+AM_CPPFLAGS = $(sdl_CFLAGS) -Wno-write-strings -fpermissive $(libgamemusic_CFLAGS) -Wall -Wuninitialized -Wmaybe-uninitialized -fsigned-char
+AM_LDFLAGS = $(sdl_LIBS) $(libgamemusic_LIBS) -fsigned-char
 
 if USE_MUSIC
 AM_CPPFLAGS += -DUSE_MUSIC

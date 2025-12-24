@@ -120,14 +120,19 @@ void dolevelsong (void) {
 
 	n=findcheckpt (pl.level);							// =0 (player) if not there
 	if ((n>0)&&(objs[n].inside)&&((objs[n].inside[0]=='*')||
-		(objs[n].inside[0]=='#')||(objs[n].inside[0]=='&')))
-			strcpy (newlevel,objs[n].inside);		// Level song
-	else {
+		(objs[n].inside[0]=='#')||(objs[n].inside[0]=='&'))) {
+			//strcpy (newlevel,objs[n].inside);		// Level song
+			strncpy(newlevel, objs[n].inside, sizeof(newlevel)-1);
+			newlevel[sizeof(newlevel)-1] = '\0';
+	} else {
 		c=findcheckpt(0);
 		if (objs[c].inside) {
 			d=objs[c].inside[0];
-			if ((d=='*')||(d=='#')||(d=='&'))
-				strcpy (newlevel,objs[c].inside);		// Level song
+			if ((d=='*')||(d=='#')||(d=='&')) {
+				//strcpy (newlevel,objs[c].inside);		// Level song
+				strncpy(newlevel, objs[c].inside, sizeof(newlevel)-1);
+				newlevel[sizeof(newlevel)-1] = '\0';
+				}
 			}
 		};
 	};
@@ -805,7 +810,7 @@ void purgeobjs (void) {
 	d=0;
 
 	for (c=0; c<numobjs; c++) {
-		if (c!=d) memcpy (&objs[d],&objs[c],sizeof(objtype));
+		if (c!=d) memmove (&objs[d],&objs[c],sizeof(objtype));
 		if (objs[c].objkind==obj_killme) {
 			if (objs[c].inside!=NULL) free (objs[c].inside);
 			}

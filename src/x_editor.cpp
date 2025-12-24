@@ -96,9 +96,11 @@ int objdesign (int dx, int dy) {				// Returns 1 if need redraw
 			drawboard();
 			return (1);
 		case 'K':
-			if (objnum>=0) lastobj=objnum; break;
+			if (objnum>=0) lastobj=objnum;
+			break;
 		case 'M':
-			if (objnum>=0) editobj=1; break;
+			if (objnum>=0) editobj=1;
+			break;
 		};
 
 	if (editobj) {
@@ -108,7 +110,8 @@ int objdesign (int dx, int dy) {				// Returns 1 if need redraw
 		strupr (tempstr);
 		for (n=0; n<numobjkinds; n++) {
 			if (strcmp (tempstr,kindname[n])==0) {
-				objs[objnum].objkind=n;	break;
+				objs[objnum].objkind=n;
+				break;
 				};
 			};
 
@@ -356,10 +359,12 @@ void design (void) {
 				if (toupper (tempfname[0])=='Y') {
 					zapobjs();
 					init_brd();
-					}; break;
+					};
+					break;
 			case 'S':
 				infname ("Save:",tempfname);
-				if (tempfname[0]!='\0') saveboard (tempfname); break;
+				if (tempfname[0]!='\0') saveboard (tempfname);
+				break;
 			case 'C':
 				clearvp (&statvp);
 				wprint (&statvp,2,1,1,"New Color:");

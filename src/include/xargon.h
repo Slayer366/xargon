@@ -15,7 +15,7 @@ extern uint16_t bd [boardxs][boardys];
 
 #define board(x,y) (bd[x][y]&0x3fff)
 #define modboard(x,y) bd[x][y]|=mod_screen;
-#define setboard(x,y,n) bd[x][y]=n|mod_screen;
+#define setboard(x,y,n) bd[x][y]=((n)|mod_screen);
 
 extern int16_t scrollxd, scrollyd, oldscrollxd, oldscrollyd, oldx0, oldy0;
 extern char newlevel[16],curlevel[16];

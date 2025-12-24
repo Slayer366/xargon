@@ -143,7 +143,7 @@ void undrawwin (wintype *win) {
 
 void wprint_batch (vptype *vp, int x, int y, int font, const char *text) {
 	int fontx;
-	int c;
+	//int c;
 
 	if ((curhi!=vp->vphi)||(curback!=vp->vpback)) {
 		fontcolor (vp, vp->vphi, vp->vpback);
@@ -156,7 +156,9 @@ void wprint_batch (vptype *vp, int x, int y, int font, const char *text) {
 		};
 	if (fontx!=0) {
 	  drawwinthrottle = 1;
-		for (c=0; c<strlen(text); c++) {
+		size_t len = strlen(text);
+//		for (c=0; c<strlen(text); c++) {
+		for (size_t c=0; c<len; c++) {
 			drawshape (vp,(font<<8)+(text[c]&0x7f),x+fontx*c,y);
 			// (font<<8) left shift twice = font*8*8
 			};
@@ -166,7 +168,7 @@ void wprint_batch (vptype *vp, int x, int y, int font, const char *text) {
 
 void wprint (vptype *vp, int x, int y, int font, const char *text) {
 	int fontx;
-	int c;
+	//int c;
 
 	if ((curhi!=vp->vphi)||(curback!=vp->vpback)) {
 		fontcolor (vp, vp->vphi, vp->vpback);
@@ -178,7 +180,9 @@ void wprint (vptype *vp, int x, int y, int font, const char *text) {
 		default: fontx=0;
 		};
 	if (fontx!=0) {
-		for (c=0; c<strlen(text); c++) {
+		size_t len = strlen(text);
+//		for (c=0; c<strlen(text); c++) {
+		for (size_t c=0; c<len; c++) {
 			drawshape (vp,(font<<8)+(text[c]&0x7f),x+fontx*c,y);
 			// (font<<8) left shift twice = font*8*8
 			};
@@ -226,7 +230,7 @@ void winput (vptype *vp, int x, int y, int font, char *text, int maxlen) {
 				wprint (vp,x,y,font,text);
 				text[0]='\0';
 				};
-			if (strlen (text)<maxlen) {
+			if ((int)strlen (text)<maxlen) {
 				templen=strlen(text);
 				text [templen]=key;
 				text [templen+1]=0;

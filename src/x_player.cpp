@@ -67,6 +67,7 @@ int msg_player (int n, int msg, int z) {
 	const char climbsh[7]={0x0c,0x0c,0x0d,0x0e,0x0e,0x0d,0x0d};
 	const char climby[7]={4,0,0,6,4,4,0};
 	objtype *pobj;	pobj=&(objs[n]);
+	(void)z;
 
 	if (msg==msg_update) {
 		switch (pobj->state) {
@@ -86,7 +87,8 @@ int msg_player (int n, int msg, int z) {
 				else if (pobj->xd==0) {
 					if (dx1!=0) {
 						pobj->substate=7;	pobj->xd=dx1;
-						pobj->statecount=0; mod1=1; break;
+						pobj->statecount=0; mod1=1;
+						break;
 						}
 					else if (pobj->statecount>fidgetmax) {
 //						pobj->info1=0;
@@ -94,7 +96,8 @@ int msg_player (int n, int msg, int z) {
 						}
 					else if (pobj->statecount>=(fidgetmax-32)) mod1=1;
 					else if (pobj->statecount==(fidgetmax-42)) {
-						fidgetnum=xr_random(4); txt (fidgetmsg[fidgetnum],6,0);
+						fidgetnum=xr_random(4);
+						txt (fidgetmsg[fidgetnum],6,0);
 						}
 					else if (pobj->statecount==3) mod1=1;
 					if (cando (n,pobj->x,(pobj->y&0xfff0)+16,
@@ -177,7 +180,10 @@ int msg_player (int n, int msg, int z) {
 					}; break;
 			case st_die:
 				if (pobj->substate==die_bird) {
-					pobj->yd=min (pobj->yd++,8); pobj->xd=xr_random(7)-3;
+					//pobj->yd=min (pobj->yd++,8);
+					pobj->yd++;
+					if (pobj->yd > 8) pobj->yd = 8;
+					pobj->xd=xr_random(7)-3;
 					justmove (n,pobj->x+pobj->xd,pobj->y+pobj->yd);
 					}
 				else if (pobj->substate==die_fish) {
@@ -453,6 +459,7 @@ int msg_player (int n, int msg, int z) {
 int msg_tiny (int n, int msg, int z) {
 	int sh=kindtable[obj_tiny]*256;
 	objtype *pobj; pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -462,7 +469,9 @@ int msg_tiny (int n, int msg, int z) {
 				if (cando (n,pobj->x+dx1*4,pobj->y+dy1*4,f_playerthru)) {
 					pobj->x+=dx1*4; pobj->y+=dy1*4;
 					}
-				}; calc_scroll(0); touchbkgnd(0);
+				};
+				calc_scroll(0);
+				touchbkgnd(0);
 			return ((pobj->statecount&1)==0);
 		case msg_draw:
 			if (pobj->xd!=0) sh+=pobj->statecount/2+((pobj->xd<0)?0:12);
@@ -476,6 +485,7 @@ int msg_heroswim  (int n, int msg, int z) {
 	int onwater,destx,desty,tempy;
 	int sh=kindtable[obj_heroswim]*256;
 	objtype *pobj;	pobj=&(objs[n]);
+	(void)z;
 
 
 	switch (msg) {
@@ -499,8 +509,9 @@ int msg_heroswim  (int n, int msg, int z) {
 			if ((fire1)||(key==' ')) {
 				fire1off=1;
 				f=0;
-				for (c=0; c<numscrnobjs; c++)
+				for (c=0; c<numscrnobjs; c++) {
 					f+=(objs[scrnobjs[c]].objkind==obj_torpedo);
+					}
 					if (f<1) {
 						addobj (obj_torpedo,pobj->x+22,pobj->y+25,6,0);
 						addobj (obj_torpedo,pobj->x-3,pobj->y+25,-6,0);
@@ -522,7 +533,8 @@ int msg_heroswim  (int n, int msg, int z) {
 				pobj->yd=0;
 				};
 			fishdo (n,destx,pobj->y);							// try do
-			calc_scroll(0); return (1);
+			calc_scroll(0);
+			return (1);
 		case msg_draw:
 			if ((pobj->yd>0)&&(pobj->xd==0)) pobj->state=0;
 			else if ((pobj->yd<0)&&(pobj->xd==0)) pobj->state=1;
@@ -538,6 +550,7 @@ int msg_herobee (int n, int msg, int z) {
 	int c,f;
 	int destx,desty;
 	objtype *pobj;	pobj=&(objs[n]);
+	(void)z;
 
 	switch (msg) {
 		case msg_update:
@@ -553,8 +566,9 @@ int msg_herobee (int n, int msg, int z) {
 			if (fire1||(key==' ')) {
 				fire1off=1;
 				f=0;
-				for (c=0; c<numscrnobjs; c++)
+				for (c=0; c<numscrnobjs; c++) {
 					f+=(objs[scrnobjs[c]].objkind==obj_laser);
+					}
 					if (f<1) {
 						pobj->xd=pobj->substate;
 						addobj (obj_laser,pobj->x+sgn(pobj->substate)*8,
@@ -571,7 +585,9 @@ int msg_herobee (int n, int msg, int z) {
 				desty=pobj->y+pobj->yd;
 				if (!justmove (n,destx,desty)) pobj->yd=0;
 				};
-			calc_scroll(0); touchbkgnd(0); return (1);
+			calc_scroll(0);
+			touchbkgnd(0);
+			return (1);
 		case msg_draw:
 			if (pobj->xd==0) sh+=pobj->counter/2+4;
 			else sh+=pobj->counter/2+((pobj->xd>0)?2:0);

@@ -23,17 +23,20 @@ SDL_Surface *screen;
 
 char *ultoa(unsigned long val, char *str, int base)
 {
+	(void)base;
 	sprintf(str, "%lu", val);
 	return str;
 }
 #ifndef __WIN32
 char *itoa(int val, char *str, int base)
 {
+	(void)base;
 	sprintf(str, "%d", val);
 	return str;
 }
 char *ltoa(long val, char *str, int base)
 {
+	(void)base;
 	sprintf(str, "%ld", val);
 	return str;
 }
@@ -82,12 +85,14 @@ void cputs(const char *s)
 
 void textcolor(int c)
 {
+	(void)c;
 //	printf("\033[%d;%dm", (c & 8) ? 1 : 22, 30 + (((c & 1) << 2) | ((c & 4) >> 2) | (c & 2)));
 	return;
 }
 
 void textbackground(int c)
 {
+	(void)c;
 //	printf("\033[%dm", 40 + ((c & 1) << 2) | ((c & 4) >> 2) | (c & 2));
 	return;
 }
@@ -104,11 +109,17 @@ void disable(void)
 
 void window(int x, int y, int w, int h)
 {
+	(void)x;
+	(void)y;
+	(void)w;
+	(void)h;
 	// ???
 }
 
 void gotoxy(int x, int y)
 {
+	(void)x;
+	(void)y;
 //	printf("\033[%d;%dH", x, y);
 	return;
 }
@@ -203,6 +214,8 @@ void spkr_intr(void)
 void setvect(int intnum, void (*handler)(void))
 {
 	// TODO
+	(void)intnum;
+	(void)handler;
 	return;
 }
 
@@ -248,6 +261,7 @@ unsigned char keydown[2][256];
 void installhandler(unsigned char status)
 {
 	// no op
+	(void)status;
 	return;
 }
 
@@ -267,7 +281,10 @@ void clrvp (vptype *vp,byte col)
 	// TODO: optimize by incrementing shape ptr instead
 	for (int y = 0; y < vp->vpyl; y++) {
 		for (int x = 0; x < vp->vpxl; x++) {
-			((char *)::screen->pixels)[(vp->vpy + y) * SCREEN_WIDTH + (vp->vpx + x)] = col;
+			//((char *)::screen->pixels)[(vp->vpy + y) * SCREEN_WIDTH + (vp->vpx + x)] = col;
+			uint8_t *p = (uint8_t *)screen->pixels;
+			int pitch = screen->pitch;
+			p[(vp->vpy + y) * pitch + (vp->vpx + x)] = col;
 		}
 	}
 
@@ -307,9 +324,9 @@ void scrollvp (vptype *vp,int xd,int yd)
 	}
 	uint8_t *s = (uint8_t *)::screen->pixels;
 	for (int y = ystart; (yd < 0) ? (y < yend) : (y > yend); y += ydir) {
-		memcpy(
-			&s[y * SCREEN_WIDTH + xdest],
-			&s[(y - yd) * SCREEN_WIDTH + xsrc],
+		memmove(
+			&s[y * screen->pitch + xdest],
+			&s[(y - yd) * screen->pitch + xsrc],
 			xlen
 		);
 	}
@@ -320,7 +337,7 @@ void scrollvp (vptype *vp,int xd,int yd)
         int cy = vp->vpy + vp->vpyl + yd;
         for (int y = 0; y < -yd; y++) {
             memset(
-                &s[(cy + y) * SCREEN_WIDTH + vp->vpx],
+                &s[(cy + y) * screen->pitch + vp->vpx],
                 vp->vpback,
                 vp->vpxl
             );
@@ -330,7 +347,7 @@ void scrollvp (vptype *vp,int xd,int yd)
         int cy = vp->vpy;
         for (int y = 0; y < yd; y++) {
             memset(
-                &s[(cy + y) * SCREEN_WIDTH + vp->vpx],
+                &s[(cy + y) * screen->pitch + vp->vpx],
                 vp->vpback,
                 vp->vpxl
             );
@@ -351,6 +368,13 @@ void scroll (vptype *vp,int x0,int y0,int x1,int y1,int xd,int yd)
 {
 	// TODO
 	//printf("todo: scroll\n");
+	(void)vp;
+	(void)x0;
+	(void)y0;
+	(void)x1;
+	(void)y1;
+	(void)xd;
+	(void)yd;
 	return;
 }
 
@@ -360,7 +384,9 @@ void plot_vga (int x, int y, byte color)
 		if (SDL_LockSurface(::screen) < 0) return;
 	}
 
-	((char *)::screen->pixels)[y * SCREEN_WIDTH + x] = color;
+	//((char *)::screen->pixels)[y * SCREEN_WIDTH + x] = color;
+	uint8_t *p = (uint8_t *)screen->pixels;
+	p[y * screen->pitch + x] = color;
 
 	if (SDL_MUSTLOCK(::screen)) SDL_UnlockSurface(::screen);
 
@@ -403,7 +429,10 @@ void ldrawsh_vga (vptype *vp, int draw_x, int draw_y, int sh_xlb, int sh_yl,
 			uint8_t pixel = shape[y * sh_xlb + x];
 			pixel = cmtab[cmtable][pixel];
 			if (pixel == 255) continue; // transparent
-			((char *)::screen->pixels)[(draw_y + y) * SCREEN_WIDTH + (draw_x + x)] = pixel;
+			//((char *)::screen->pixels)[(draw_y + y) * SCREEN_WIDTH + (draw_x + x)] = pixel;
+			uint8_t *p = (uint8_t *)screen->pixels;
+			int pitch = screen->pitch;
+			p[(draw_y + y) * pitch + (draw_x + x)] = pixel;
 		}
 	}
 
@@ -426,6 +455,7 @@ void lcopypage(void)
 
 void uncrunch (unsigned char *sourceptr, char *destptr, int length)
 {
+	(void)sourceptr;
 	// TODO
 	if (destptr == (char *)0xb8000000) {
 		printf("decrunch to text screen\n");
@@ -454,7 +484,7 @@ class SampleHandler: public MixerChannel {
 		{
 			// Convert samples from mono s32 to s16
 			int16_t *out = (int16_t *)this->buf;
-			for (int i = 0; i < samples; i++) {
+			for (Bitu i = 0; i < samples; i++) {
 				*out++ = CLIP(buffer[i]);
 				*out++ = CLIP(buffer[i]);
 			}
@@ -465,7 +495,7 @@ class SampleHandler: public MixerChannel {
 		{
 			// Convert samples from stereo s32 to s16
 			int16_t *out = (int16_t *)this->buf;
-			for (int i = 0; i < samples * 2; i++) {
+			for (Bitu i = 0; i < samples * 2; i++) {
 				*out++ = CLIP(buffer[i]);
 			}
 			return;
@@ -512,7 +542,8 @@ inline long pcm_mix_s16(long a, long b)
 int16_t sound_buffer[4096];//2048];
 void fillAudioBuffer(void *udata, Uint8 *stream, int len)
 {
-	int bufvalid_bytes = min(len, sizeof(sound_buffer));
+	(void)udata;
+	int bufvalid_bytes = min(len, (int)sizeof(sound_buffer));
 	int bufvalid_samples = bufvalid_bytes / sizeof(int16_t) / 2;
 
 	// Mix in the music
@@ -649,6 +680,8 @@ int AdlibDetect(void)
 
 int SetFMVolume(unsigned char left, unsigned char right)
 {
+	(void)left;
+	(void)right;
 	return 0;
 }
 
@@ -665,6 +698,8 @@ void DSPClose(void)
 
 int SetMasterVolume(unsigned char left, unsigned char right)
 {
+	(void)left;
+	(void)right;
 	return 0;
 }
 
@@ -728,6 +763,7 @@ char *GetSequence(char *f_name)
 void SetLoopMode(int m)
 {
 	// Always called with m=1 to loop music
+	(void)m;
 	return;
 }
 

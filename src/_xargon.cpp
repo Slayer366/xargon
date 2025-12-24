@@ -191,7 +191,9 @@ void init_brd (void) {
 	};
 
 void txt (char *msg, int col, int flg) {
-	strcpy (botmsg,msg);
+	//strcpy (botmsg,msg);
+	strncpy(botmsg, msg, sizeof(botmsg)-1);
+	botmsg[sizeof(botmsg)-1] = '\0';
 	botcol=col;
 	if (!flg) bottime=100;
 	text_flg=flg;
@@ -283,10 +285,10 @@ void loadcfg (void) {
 		cf.firstthru=1;
 		}
 	else {
-		if ( read (cfgfile,&hiname,sizeof (hiname)) );
-		if ( read (cfgfile,&hiscore,sizeof(hiscore)) );
-		if ( read (cfgfile,&savename,sizeof(savename)) );
-		if (read (cfgfile,&cf,sizeof(cf))<0) cf.firstthru=1;
+		if ( read (cfgfile,&hiname,sizeof (hiname)) ) {};
+		if ( read (cfgfile,&hiscore,sizeof(hiscore)) ) {};
+		if ( read (cfgfile,&savename,sizeof(savename)) ) {};
+		if ( read (cfgfile,&cf,sizeof(cf))<0) cf.firstthru=1;
 		};
 	close (cfgfile);
 	};
@@ -296,10 +298,10 @@ void savecfg (void) {
 
 	cfgfile=_creat (cfgfname,0644);
 	if (cfgfile>=0) {
-		if ( write (cfgfile,&hiname,sizeof (hiname)) );
-		if ( write (cfgfile,&hiscore,sizeof(hiscore)) );
-		if ( write (cfgfile,&savename,sizeof(savename)) );
-		if ( write (cfgfile,&cf,sizeof(cf)) );
+		if ( write (cfgfile,&hiname,sizeof (hiname)) ) {};
+		if ( write (cfgfile,&hiscore,sizeof(hiscore)) ) {};
+		if ( write (cfgfile,&savename,sizeof(savename)) ) {};
+		if ( write (cfgfile,&cf,sizeof(cf)) ) {};
 		};
 	close (cfgfile);
 	};
@@ -321,8 +323,10 @@ void loadboard (char *fname) {
 	shm_want [6]=1;
 	shm_want [30]=1;
 
-	strcpy (dest,fname);
-	if (strcmp(dest,tempname)!=0) strcat (dest,ext);
+	//strcpy (dest,fname);
+	//if (strcmp(dest,tempname)!=0) strcat (dest,ext);
+	snprintf(dest, sizeof(dest), "%s%s", fname,
+         	(strcmp(fname, tempname) != 0) ? ext : "");
 
 	strcpy (curlevel,fname);
 	zapobjs ();
@@ -340,10 +344,10 @@ void loadboard (char *fname) {
 	if (!read (boardfile,&cnt_fruit,sizeof(cnt_fruit))) rexit(5);
 	for (c=0; c<numobjs; c++) {
 		if (objs[c].inside_val != 0) {
-			if ( read (boardfile,&tempint,sizeof(tempint)) );
+			if ( read (boardfile,&tempint,sizeof(tempint)) ) {};
 			objs[c].inside=(char*)malloc(tempint+1);
 			objs[c].inside_val = 1;
-			if ( read (boardfile,objs[c].inside,tempint+1) );
+			if ( read (boardfile,objs[c].inside,tempint+1) ) {};
 			}
 		else {
 			objs[c].inside = NULL;
@@ -377,24 +381,26 @@ void saveboard (char *fname) {
 	char dest[16];
 	int16_t c,tempint;
 
-	strcpy (dest,fname);
-	if (strcmp(dest,tempname)!=0) strcat (dest,ext);
+	//strcpy (dest,fname);
+	//if (strcmp(dest,tempname)!=0) strcat (dest,ext);
+	snprintf(dest, sizeof(dest), "%s%s", fname,
+         	(strcmp(fname, tempname) != 0) ? ext : "");
 
 	boardfile=_creat (dest, 0644);				// Was O_BINARY
 	if (boardfile<0) rexit(20);
 	if (write (boardfile,&bd,sizeof(bd))<0) rexit(5);
-	if ( write (boardfile,&numobjs,sizeof(numobjs)) );
+	if ( write (boardfile,&numobjs,sizeof(numobjs)) ) {};
 	//write (boardfile,&objs,numobjs*sizeof(objs[0]));
 	for (int i = 0; i < numobjs; i++) {
-		if ( write (boardfile, &objs[i], 31) );
+		if ( write (boardfile, &objs[i], 31) ) {};
 	}
-	if ( write (boardfile,&pl,sizeof(pl)) );
-	if ( write (boardfile,&cnt_fruit,sizeof(cnt_fruit)) );
+	if ( write (boardfile,&pl,sizeof(pl)) ) {};
+	if ( write (boardfile,&cnt_fruit,sizeof(cnt_fruit)) ) {};
 	for (c=0; c<numobjs; c++) {
 		if (objs[c].inside_val != 0) {
 			tempint=strlen (objs[c].inside);
-			if ( write (boardfile,&tempint,sizeof(tempint)) );
-			if ( write (boardfile,objs[c].inside,tempint+1) );
+			if ( write (boardfile,&tempint,sizeof(tempint)) ) {};
+			if ( write (boardfile,objs[c].inside,tempint+1) ) {};
 			};
 		};
 	_close (boardfile);
@@ -451,7 +457,8 @@ int loadsavewin (char *msg, char *blankmsg) {
 	};
 
 int loadgame (void) {
-	int num, hand;
+	int num;
+	//int hand;
 	char tempstr[16];
 	char boardname[16];
 
@@ -467,7 +474,8 @@ int loadgame (void) {
 	};
 
 void savegame (void) {
-	int num,hand;
+	int num;
+	//int hand;
 	char s[savelen];
 	char tempstr[16];
 	char boardname[16];
@@ -478,11 +486,11 @@ void savegame (void) {
 		fontcolor (&menu_win.inside,7,1);
 		wprint (&menu_win.inside,28,20+num*10,2,"         ");
 		winput (&menu_win.inside,28,20+num*10,2,s,9);
-    if ((key!=escape) && (strlen(s) == 0)) {
-      strcpy(s, "SAVE");  // default if nothing entered
-      char tmp[16]; itoa(num, tmp, 10); // add # to entry name
-      strcat(s, tmp);
-    }
+	if ((key!=escape) && (strlen(s) == 0)) {
+		strcpy(s, "SAVE");  // default if nothing entered
+		char tmp[16]; itoa(num, tmp, 10); // add # to entry name
+		strcat(s, tmp);
+		}
 		if ((key!=escape)/*&&(strlen(s)!=0)*/) {
 			strcpy (savename[num],s);
 			itoa (num,tempstr,10);
@@ -531,8 +539,6 @@ int getline (int n, char *line, int dospace) {
 	char ch;
 
 	while ((a<n)&&(c<textmsglen)) a+=(*(textmsg+c++))==13;
-//	while ((*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
-//	if ((*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
 	while ((c<textmsglen)&&(*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
 	if ((c<textmsglen)&&(*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
 		ourcolor=*(textmsg+c++)-'0';
@@ -790,7 +796,9 @@ void moddrawboard (void) {
 	};
 
 void printhi (int newhi) {
-	int c,d,posn;
+	int c;
+	//int d;
+	int posn=0;
 	char s[10];
 	wintype hiwin;
 
@@ -832,11 +840,11 @@ void printhi (int newhi) {
 		fontcolor (&hiwin.inside,7,back);
 		wprint (&hiwin.inside,8,20+posn*7,2,"        ");
 		winput (&hiwin.inside,8,20+posn*7,2,hiname[posn],8);
-    if (strlen(hiname[posn]) == 0) {
-        strcpy(hiname[posn], "M.H."); // default name if nothing is entered
-        fontcolor (&hiwin.inside,7,back);
-        wprint (&hiwin.inside,8,20+posn*7,2,hiname[posn]);
-    }
+	if (strlen(hiname[posn]) == 0) {
+		strcpy(hiname[posn], "M.H."); // default name if nothing is entered
+		fontcolor (&hiwin.inside,7,back);
+		wprint (&hiwin.inside,8,20+posn*7,2,hiname[posn]);
+		}
 		savecfg ();
 		};
 	if (newhi==0) rest ();
@@ -846,8 +854,9 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 	int textx0, int winx8, int winxl16, int winy, int menuflag) {
 	wintype menuwin;
 	int count=0;
-	int democlock,gotkey,c,moveclock=0;
-	int cur;
+	int gotkey,c,moveclock=0;
+	//int democlock;
+	int cur=0;
 	int oldcur=1;
 	char line [80];
 	gamecount=0;
@@ -864,7 +873,7 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 		wprint (&menuwin.inside,82+(cur>=y0)*textx0,78,2,soundf?"ON":"OFF");
 		}
 	setpagemode(1);
-	democlock=getclock();
+	//democlock=getclock();
 	for (cur=numlines()-1; cur>=0; cur--) {
 		fontcolor (&menuwin.inside,getline (cur,line,0),-1);
 		if (menuflag==1) {
@@ -900,7 +909,7 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 			cur+=dx1+dy1;
 			if ((cur>=0)&&(cur<(num))) snd_play (4,snd_jump);
 			cur=min (num-1,max (0,cur));
-			democlock=(getclock());
+			//democlock=(getclock());
 			};
 
 //		if ((((getclock())-democlock)>300)&&demoflag) {
@@ -914,7 +923,9 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 		if (key==187) key='I';
 		if ((key==enter)||(key==' ')||(fire1)) {key=keytab[cur]; gotkey=1;}
 		else {
-			for (c=0;c<strlen(keytab);c++) {
+			size_t klen = strlen(keytab);
+//			for (c=0;c<strlen(keytab);c++) {
+			for (c=0;c<(int)klen;c++) {
 				if (key==keytab[c]) gotkey=1;
 				};
 			};
@@ -1011,7 +1022,8 @@ void buymenu (void) {
 						pl.health++; pl.emeralds-=15; statmodflg|=mod_screen;
 						};
 					}
-				else dotextmsg (7,0); break;
+				else dotextmsg (7,0);
+				break;
 			case 'B':							// Extra laser
 				if (objs[0].objkind!=obj_player) {}
 				else if (pl.emeralds>=10) {
@@ -1020,10 +1032,13 @@ void buymenu (void) {
 						setcolor (162,23,13,33); setcolor (163,29,19,39);
 						setcolor (164,35,25,45); setcolor (165,42,32,51);
 						setcolor (166,49,40,57); setcolor (167,57,50,63);
-						pl.emeralds-=10; statmodflg|=mod_screen;
-						};
+						pl.emeralds-=10;
+						statmodflg|=mod_screen;
+						}
+					} else {
+						dotextmsg (7,0);
 					}
-				else dotextmsg (7,0); break;
+					break;
 			case 'C':							// Rapid fire
 				if (objs[0].objkind!=obj_player) {}
 				else if (pl.emeralds>=25) {
@@ -1031,9 +1046,12 @@ void buymenu (void) {
 					setcolor (162,32,0,0); setcolor (163,38,0,0);
 					setcolor (164,44,0,0); setcolor (165,50,0,0);
 					setcolor (166,56,0,0); setcolor (167,63,0,0);
-					pl.emeralds-=25; statmodflg|=mod_screen;
+					pl.emeralds-=25;
+					statmodflg|=mod_screen;
+					} else {
+						dotextmsg (7,0);
 					}
-				else dotextmsg (7,0); break;
+					break;
 			case 'D':							// One fireball
 				if (objs[0].objkind!=obj_player) {}
 				else if (pl.emeralds>=5) {
@@ -1041,18 +1059,24 @@ void buymenu (void) {
 						addinv (inv_fire);
 						pl.emeralds-=5; statmodflg|=mod_screen;
 						};
+					} else {
+						dotextmsg (7,0);
 					}
-				else dotextmsg (7,0); break;
+					break;
 			case 'E':							// Five fireballs
 				if (objs[0].objkind!=obj_player) {}
 				else if (pl.emeralds>=20) {
 					if (invcount(inv_fire)<5) {
 						addinv (inv_fire); addinv (inv_fire);
-						addinv (inv_fire); addinv (inv_fire); addinv (inv_fire);
-						pl.emeralds-=20; statmodflg|=mod_screen;
-						};
+						addinv (inv_fire); addinv (inv_fire);
+						addinv (inv_fire);
+						pl.emeralds-=20;
+						statmodflg|=mod_screen;
+						}
+					} else {
+						dotextmsg (7,0);
 					}
-				else dotextmsg (7,0); break;
+					break;
 			case 'F':							// Invincibility
 				if (pl.emeralds>=30) {
 					if (!invcount(inv_invin)) {
@@ -1186,11 +1210,12 @@ void gamemenu (void) {
 	};
 
 void play (int demoflg) {
-	int c,d,begclock,temppage;
+	int c,begclock,temppage;
+	//int d;
 	int o_col=0;
 	int cheatchar=0;
 	int cheatcount=0;
-	char tempstr[16];
+	//char tempstr[16];
 	gamecount=0; gameover=0;
 
 	newlevel[0]='\0';
@@ -1290,11 +1315,18 @@ void play (int demoflg) {
 					c=findcheckpt(0);
 					if (objs[c].state==5) {
 						snd_play (4,snd_masher);
-						temppage=pagedraw; pagedraw=pageshow; setpages();
-						savegame(); drawstats();
-						pagedraw=temppage; setpages(); moddrawboard();
-						}
-					else dotextmsg (4,0); break;
+						temppage=pagedraw;
+						pagedraw=pageshow;
+						setpages();
+						savegame();
+						drawstats();
+						pagedraw=temppage;
+						setpages();
+						moddrawboard();
+					} else {
+						dotextmsg (4,0);
+					}
+					break;
 				case 'L':												// LOAD
 					snd_play (4,snd_masher);
 					temppage=pagedraw; pagedraw=pageshow; setpages();
@@ -1507,7 +1539,7 @@ void rexit (int num) {
 	};
 
 void rexit2 (int n) {
-	char errnum[12];
+	//char errnum[12];
 
 	if (n) {
 		gr_exit();

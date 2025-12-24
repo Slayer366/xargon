@@ -139,11 +139,19 @@ char pixvalue;
 void pixaddr_cga (int x,int y,char **vidbuf,unsigned char *bitc) {
 //   *vidbuf = (void*) (0xb8000000 + (x/4) + 0x2000*(y&1) + 0x50*(y/2));
 //   *bitc = (x&3)*2;
+	(void)x;
+	(void)y;
+	(void)vidbuf;
+	(void)bitc;
 };
 
 void pixaddr_ega (int x,int y,char **vidbuf,unsigned char *bitc) {
 //   *vidbuf = (void*) (0xa0000000 + y*40 + x/8 + drawofs);
 //   *bitc = (x&7);
+	(void)x;
+	(void)y;
+	(void)vidbuf;
+	(void)bitc;
 };
 
 void pixaddr_vga (int x,int y,char **vidbuf,unsigned char *bitc) {
@@ -244,12 +252,12 @@ void pageflip (void) {
 	flush_staged_palette_changes();
 	SDL_Flip(::screen);
 return;
-	int portnum;
+//	int portnum;
 	pageshow=!pageshow;
 	pagedraw=!pagedraw;
 
 	setpages();
-	portnum=getportnum();
+//	portnum=getportnum();
 //	do {} while ((inportb(0x3da)&8));	// Wait for end of retrace
 //	outport (portnum,0x0c+(showofs&0xff00));
 //	outport (portnum,0x0d+((showofs&0x00ff)<<8));
@@ -265,7 +273,7 @@ return;
 void vga_setpal(void) {
 	int start=0;
 	int number=256;
-	unsigned int i;
+	int i;
 
 	if ((start>256)||(start<0)||((start+number)>256)) return;
 	waitsafe();
@@ -289,7 +297,7 @@ void vga_setpal(void) {
 void readpal(p_rec palette) {
 	int start=0;
 	int number=256;
-	unsigned int i;
+	int i;
 
 	if ((start>256)|(start<0)|((start+number)>256)) return;
 	for (i=start;i<(start+number);i++) {
@@ -321,7 +329,8 @@ void clrpal(void) {
 void fadein(void) {
 	//p_rec currentpal;
 	SDL_Color currentpal[256];
-	int temp, i, cycle;
+	int i, cycle;
+	//int temp;
 
 	for (cycle=0;cycle<64;cycle+=2) {
 		//for (i=0;i<(256*3);i++){
@@ -399,7 +408,8 @@ void flush_staged_palette_changes(void) {
 void fadeout(void) {
 	//p_rec currentpal;
 	SDL_Color currentpal[256];
-	int i, temp, cycle;
+	int i, cycle;
+	//int temp;
 
 	for (cycle=63;cycle>=0;cycle-=2) {
 		//for (i=0;i<256*3;i++){
@@ -472,7 +482,8 @@ void gr_exit (void) {
 void dim (void) {
 	//p_rec currentpal;
 	SDL_Color currentpal[256];
-	int temp,i,cycle;
+	int i,cycle;
+	//int temp;
 
 	for (cycle=63;cycle>=31;cycle-=6) {
 		//for (i=0;i<256*3;i++) {
@@ -496,7 +507,8 @@ void dim (void) {
 void undim (void) {
 	//p_rec currentpal;
 	SDL_Color currentpal[256];
-	int temp,i,cycle;
+	int i,cycle;
+	//int temp;
 
 	for (cycle=32;cycle<64;cycle+=6) {
 		//for (i=0;i<(256*3);i++) {

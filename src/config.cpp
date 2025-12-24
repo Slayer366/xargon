@@ -35,14 +35,14 @@ void cfg_init(int argc, char *argv[]) {
 	char s[16];
 
 	clrscr();
-	cputs ("\r\n\r\nDetecting your hardware...\r\n");
-	cputs ("\r\nIf your system locks, reboot and type:\r\n");
-	cputs ("   "); cputs ("XARGON");
-		cputs (" /NOSB  (No Sound Blaster card)\r\n");
-	cputs ("   "); cputs ("XARGON");
-		cputs (" /SB    (With a Sound Blaster)\r\n");
-	cputs ("   "); cputs ("XARGON");
-		cputs (" /NOSND (If all else fails)\r\n");
+//	cputs ("\r\n\r\nDetecting your hardware...\r\n");
+//	cputs ("\r\nIf your system locks, reboot and type:\r\n");
+//	cputs ("   "); cputs ("XARGON");
+//		cputs (" /NOSB  (No Sound Blaster card)\r\n");
+//	cputs ("   "); cputs ("XARGON");
+//		cputs (" /SB    (With a Sound Blaster)\r\n");
+//	cputs ("   "); cputs ("XARGON");
+//		cputs (" /NOSND (If all else fails)\r\n");
 
 	readspeed();
 	for (c=0; c<argc; c++) {

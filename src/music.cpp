@@ -129,7 +129,7 @@ void getvoc (int c) {
 		*(memvoc+n*maxvoclen+0x1c)=(char)((voclen[c])>>8);
 		*(memvoc+n*maxvoclen+0x1e)=96;			// Speed = 256-1,000,000/rate
 		lseek (vocfilehandle,vocposn[c],SEEK_SET);
-		if ( read (vocfilehandle,memvoc+n*maxvoclen+0x20,voclen[c]) );
+		if ( read (vocfilehandle,memvoc+n*maxvoclen+0x20,voclen[c]) ) {};
 		};
 	};
 
@@ -154,11 +154,11 @@ void snd_init (char *voclib) {
 	if (voclib[0]==0) {vocflag=0; return;}
 	vocfilehandle=_open (voclib,O_BINARY|O_RDONLY);
 	if (vocfilehandle==-1) {vocflag=0; return;}
-	if ( read (vocfilehandle,&vocposn,sizeof (vocposn)) );
-	if ( read (vocfilehandle,&voclen, sizeof (voclen )) );
-	if ( read (vocfilehandle,&vocrate,sizeof (vocrate)) );
-	if ( read (vocfilehandle,&textposn,sizeof(textposn)) );
-	if ( read (vocfilehandle,&textlen,sizeof (textlen)) );
+	if ( read (vocfilehandle,&vocposn,sizeof (vocposn)) ) {};
+	if ( read (vocfilehandle,&voclen, sizeof (voclen )) ) {};
+	if ( read (vocfilehandle,&vocrate,sizeof (vocrate)) ) {};
+	if ( read (vocfilehandle,&textposn,sizeof(textposn)) ) {};
+	if ( read (vocfilehandle,&textlen,sizeof (textlen)) ) {};
 	};
 
 void snd_play (int priority, int num) {
@@ -204,18 +204,18 @@ void snd_do (void) {
 		dur=(int*)malloc (maxsndlen*2+128);
 		lseek (vocfilehandle,headersize,SEEK_SET);
 		for (c=0; c<num_macs; c++) {
-			if ( read (vocfilehandle,&j,2) );
+			if ( read (vocfilehandle,&j,2) ) {};
 			if (j!=0) {
 				soundmac[c]=(char*)malloc(j);
 				if (!soundmac[c]) rexit (154);
-				if ( read (vocfilehandle,soundmac[c],j) );
+				if ( read (vocfilehandle,soundmac[c],j) ) {};
 				}
 			else soundmac[c]=NULL;
 			};
 		SOUNDS=(int*)malloc (10480);
 		soundhandle=_open ("audio.epc",O_BINARY|O_RDONLY);
 		if (soundhandle==-1) rexit (155);
-		if ( _read (soundhandle,SOUNDS,10400) );
+		if ( _read (soundhandle,SOUNDS,10400) ) {};
 		close (soundhandle);
 		};
 

@@ -755,7 +755,7 @@ char *GetSequence(char *f_name)
 	cmf.data = new uint8_t[len];
 	memcpy(cmf.data, imfdata.data(), len);
 	::music_data.push_back(cmf);
-	printf("Loaded CMF file %s\n", cmf.name);
+	//printf("Loaded CMF file %s\n", cmf.name);
 	return (char *)cmf.data;
 #else
 	return NULL;

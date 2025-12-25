@@ -239,7 +239,7 @@ void modscroll (int sxd, int syd, int modcode) {
 
 void scroll1 (int sxd, int syd) {
 	int x,y;
-	int cut0, cut1, cut2, cut3;
+	int cut0=0, cut1=0, cut2=0, cut3=0;
 	int startx, starty,startx2,starty2;
 	int endx, endy,endx2,endy2;
 

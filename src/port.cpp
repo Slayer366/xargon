@@ -332,27 +332,27 @@ void scrollvp (vptype *vp,int xd,int yd)
 	}
 
     /* Clear newly exposed area to avoid border smear */
-    if (yd < 0) {
-        /* scrolled down ? clear bottom strip */
-        int cy = vp->vpy + vp->vpyl + yd;
-        for (int y = 0; y < -yd; y++) {
-            memset(
-                &s[(cy + y) * screen->pitch + vp->vpx],
-                vp->vpback,
-                vp->vpxl
-            );
-        }
-    } else if (yd > 0) {
-        /* scrolled up ? clear top strip */
-        int cy = vp->vpy;
-        for (int y = 0; y < yd; y++) {
-            memset(
-                &s[(cy + y) * screen->pitch + vp->vpx],
-                vp->vpback,
-                vp->vpxl
-            );
-        }
-    }
+	if (yd < 0) {
+		/* scrolled down ? clear bottom strip */
+		int cy = vp->vpy + vp->vpyl + yd;
+		for (int y = 0; y < -yd; y++) {
+			memset(
+				&s[(cy + y) * screen->pitch + vp->vpx],
+				vp->vpback,
+				vp->vpxl
+			);
+		}
+	} else if (yd > 0) {
+		/* scrolled up ? clear top strip */
+		int cy = vp->vpy;
+		for (int y = 0; y < yd; y++) {
+			memset(
+				&s[(cy + y) * screen->pitch + vp->vpx],
+				vp->vpback,
+				vp->vpxl
+			);
+		}
+	}
 
 	if (SDL_MUSTLOCK(::screen)) SDL_UnlockSurface(::screen);
 
@@ -360,7 +360,7 @@ void scrollvp (vptype *vp,int xd,int yd)
 	   if (!drawwinthrottle) {
 	      SDL_Flip(::screen);
 	   }
-	}	        
+	}
 	return;
 }
 
@@ -629,6 +629,8 @@ void StartWorx(void)
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 	::screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 8, SDL_HWPALETTE | SDL_DOUBLEBUF);
+
+	SDL_WM_SetCaption("Xargon", NULL);
 
 	::opl.cur_song = NULL;
 	::sound.len = 0;

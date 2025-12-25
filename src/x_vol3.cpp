@@ -30,7 +30,7 @@ char *demoname[1]={"demo_mac.xr0"};
 
 char v_msg[]="VOLUME THREE --- Xargon's Fury";
 
-char *fidgetmsg[4]={"What are you waiting for?","Xargon is watching you!","Don't give up Malvineous","You'll never defeat Xargon!"};
+char *fidgetmsg[4]={"What are you waiting for?","Xargon is watching you!","Don't give up, Malvineous","You'll never defeat Xargon!"};
 
 char *leveltxt[16]={
 	"Malvineous returns\r\rto the safety of\r\rthe map level\r",

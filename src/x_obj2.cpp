@@ -16,7 +16,7 @@
 #include "include/xargon.h"
 #include "include/x_snd.h"
 
-int msg_grunt (int n, int msg, int z) {
+int msg_grunt (int n, int msg, int z) {		// FANGFACE
 	int sh=kindtable[obj_grunt]*256;
 	const int grunt_die[10]={7,16,7,16,7,16,7,16,7,16};
 	const int grunt_std[5]={0,1,2,3,3};
@@ -63,7 +63,7 @@ int msg_grunt (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_biter (int n, int msg, int z) {
+int msg_biter (int n, int msg, int z) {		// WALLSNAKE
 	int sh=kindtable[obj_biter]*256;
 	int mod1=0;
 	objtype *pobj; pobj=&(objs[n]);
@@ -95,7 +95,7 @@ int msg_biter (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_centipede (int n, int msg, int z) {
+int msg_centipede (int n, int msg, int z) {		// TERRORPEDE
 	int sh=kindtable[obj_centipede]*256;
 	int c;
 	const int midtab [6][6]={
@@ -155,7 +155,7 @@ int msg_centipede (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_alien (int n, int msg, int z) {
+int msg_alien (int n, int msg, int z) {		// SNATCHER
 	int sh=kindtable[obj_alien]*256;
 	const int alien_die[20]={18,18,19,19,20,20,18,19,20,
 		18,19,20,18,19,20,20,20,20,20,20};
@@ -244,7 +244,7 @@ int msg_leech (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_troll (int n, int msg, int z) {
+int msg_troll (int n, int msg, int z) {		// TROLL
 	int sh=kindtable[obj_troll]*256;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -283,7 +283,7 @@ int msg_troll (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_blob (int n, int msg, int z) {
+int msg_blob (int n, int msg, int z) {		// SLIMER
 	int sh=kindtable[obj_blob]*256;
 	const int blobtab[8]={0,0,1,1,2,2,3,3};
 	const int ltab[8]={4,5,6,7,11,10,9,8};
@@ -343,7 +343,7 @@ int msg_blob (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_lizard (int n, int msg, int z) {
+int msg_lizard (int n, int msg, int z) {		// LIZARD
 	int sh=kindtable[obj_lizard]*256;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -368,7 +368,7 @@ int msg_lizard (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_xargbot (int n, int msg, int z) {
+int msg_xargbot (int n, int msg, int z) {		// DRONES
 	int sh=kindtable[obj_xargbot]*256;
 	const int xdtab[2]={-8,8};
 	objtype *pobj; pobj=&(objs[n]);
@@ -545,7 +545,7 @@ int msg_eel (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_badfish (int n, int msg, int z) {
+int msg_badfish (int n, int msg, int z) {		// FISH
 	int sh=kindtable[obj_badfish]*256+6;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -592,7 +592,7 @@ int msg_badfish (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_bat (int n, int msg, int z) {
+int msg_bat (int n, int msg, int z) {		// BAT
 	int sh=kindtable[obj_bat]*256+8;
 	const int ydtab[4]={1,0,-1,0};
 	objtype *pobj; pobj=&(objs[n]);
@@ -696,7 +696,7 @@ int msg_creeper (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_bee (int n, int msg, int z) {
+int msg_bee (int n, int msg, int z) {		// GIANT BEE
 	int sh=kindtable[obj_bee]*256;
 	const int ydtab[4]={1,0,-1,0};
 	objtype *pobj; pobj=&(objs[n]);
@@ -724,7 +724,7 @@ int msg_bee (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_climber (int n, int msg, int z) {
+int msg_climber (int n, int msg, int z) {		// FROCADA
 	int sh=kindtable[obj_climber]*256;
 	int k;
 	const int climb_dwn[8]={7,6,5,4,3,2,1,0};
@@ -765,7 +765,7 @@ int msg_climber (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_spider (int n, int msg, int z) {
+int msg_spider (int n, int msg, int z) {		// ANT-SPIDER
 	int sh=kindtable[obj_spider]*256;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -797,7 +797,7 @@ int msg_spider (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_skull (int n, int msg, int z) {
+int msg_skull (int n, int msg, int z) {		// SKULL-SLUG
 	int sh=kindtable[obj_skull]*256+2;
 //	const int ydtab[4]={1,0,-1,0};
 	objtype *pobj; pobj=&(objs[n]);
@@ -821,7 +821,7 @@ int msg_skull (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_seamonster (int n, int msg, int z) {
+int msg_seamonster (int n, int msg, int z) {		// ANENOMITE
 	int sh=kindtable[obj_seamonster]*256+22;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -838,7 +838,7 @@ int msg_seamonster (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_robot (int n, int msg, int z) {
+int msg_robot (int n, int msg, int z) {		// PATROL ROBOT
 	int sh=kindtable[obj_robot]*256+14;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -875,7 +875,7 @@ int msg_robot (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_redfish (int n, int msg, int z) {
+int msg_redfish (int n, int msg, int z) {		// SMALL RED FISH
 	int sh=kindtable[obj_redfish]*256+22;
 	objtype *pobj; pobj=&(objs[n]);
 
@@ -906,7 +906,7 @@ int msg_redfish (int n, int msg, int z) {
 		}; return (0);
 	};
 
-int msg_xargon (int n, int msg, int z) {
+int msg_xargon (int n, int msg, int z) {		// XARGON (DUH!)
 	int sh=kindtable[obj_xargon]*256;
 	int dist;
 	const int ydtab[8]={1,2,1,0,-1,-2,-1,0};

@@ -306,7 +306,7 @@ void pagedscroll (int sxd, int syd) {
 void refresh (int pgmode) {
 	int x,y,c,n;
 	int startx, starty, endx, endy;
-	byte updtab [boardxs][20];					// refresh (0) only
+	byte updtab [boardxs][32];					// refresh (0) only
 
 	if (pgmode) {
 		if (statmodflg) {
@@ -372,8 +372,8 @@ void refresh (int pgmode) {
 			if (objs[n].objflags&mod_screen) {				// Add to Updtab
 				x=objs[n].x/16; if (x<endx) x=endx;
 				//c=0; while (updtab[x][c]!=255) {c++;};
-				c=0; while ((c < 20) && (updtab[x][c]!=255)) {c++;};
-				if (c >= 20) {
+				c=0; while ((c < 32) && (updtab[x][c]!=255)) {c++;};
+				if (c >= 32) {
 					fprintf(stderr, "Too many entries in update table!\n");
 					break;
 				}
@@ -389,7 +389,7 @@ void refresh (int pgmode) {
 					bd[x][y]&=(mod_screen^0xffff);
 					};
 				};
-			for (c=0;(updtab[x][c]!=255)&&(c<20);c++) {
+			for (c=0;(updtab[x][c]!=255)&&(c<32);c++) {
 				n=updtab[x][c];
 				(*kindmsg [objs [n].objkind])(n,msg_draw,0);
 				};

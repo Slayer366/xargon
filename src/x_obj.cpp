@@ -59,6 +59,19 @@ const char *inv_getmsg[numinvkinds]={
 	};
 //int inv_first[numinvkinds]={-1,1,1,1,1,-1,-1,1,1,1,1,1,1,1,1,1,1};
 
+const char inv_getmsg_flash[numinvkinds] = {
+  0, // HUMAN
+  1, // USE KEY
+  0,
+  0,
+  1, // LASER
+  0, // BEE
+  0, // SUP
+  1, // ROCK
+  1, // JUMP BOOTS
+  1, // SHIELD
+};
+
 void init_objinfo (void) {
 	#include "include/x_obj.def"
 	};
@@ -755,7 +768,7 @@ int msg_key (int n, int msg, int z) {
 				addobj (obj_flash,pobj->x-3,pobj->y-2,0,0);
 				killobj (n);
 				snd_play (3,snd_getkey);
-				txt ((char*)inv_keymsg[pobj->state],3,0);
+				txt_flash ((char*)inv_keymsg[pobj->state],3,0);
 				return (1);
 				}
 			else txt ("You already have a key of that COLOR!",5,0);
@@ -1044,7 +1057,12 @@ int msg_token (int n, int msg, int z) {
 //						inv_first[pobj->state]--;
 //						txt ((char*)inv_getmsg[pobj->state],3,0);
 //						};
-					txt ((char*)inv_getmsg[pobj->state],3,0);
+					//txt ((char*)inv_getmsg[pobj->state],3,0);
+					if (inv_getmsg_flash[pobj->state]) {
+						txt_flash ((char*)inv_getmsg[pobj->state],3,0);
+					} else {
+						txt ((char*)inv_getmsg[pobj->state],3,0);
+						}
 					snd_play (3,snd_gettoken);
 					addobj (obj_flash,pobj->x-1,pobj->y-3,0,0);
 					if (pobj->state==4) {
@@ -1205,7 +1223,7 @@ int msg_bonus (int n, int msg, int z) {
 					setcolor (164,44,0,0); setcolor (165,50,0,0);
 					setcolor (166,56,0,0); setcolor (167,63,0,0);
 					kindscore[pobj->objkind]=100;
-					txt ("You now have RAPID FIRE",3,0);
+					txt_flash ("You now have RAPID FIRE",3,0);
 					snd_play (3,snd_gettoken); break;
 				case 2:
 					if ((first_fruit)&&!macplay) {
@@ -1236,7 +1254,7 @@ int msg_bonus (int n, int msg, int z) {
 					if (invcount(inv_epic)==0) addinv (inv_epic);
 					addobj (obj_flash,pobj->x-1,pobj->y-3,0,0);
 					kindscore[pobj->objkind]=100;
-					txt ("HINT: Collect EPIC poolballs in order for bonus",3,0);
+					txt_flash ("HINT: Collect EPIC poolballs in order for bonus",3,0);
 					snd_play (3,snd_getheart);	break;
 				case 10:
 					if (invcount(inv_epic)==1) addinv (inv_epic);
@@ -1252,7 +1270,7 @@ int msg_bonus (int n, int msg, int z) {
 					if (invcount(inv_epic)==3) {
 						addobj (obj_flash,pobj->x-1,pobj->y-3,0,0);
 						kindscore[pobj->objkind]=4000;
-						txt ("Special EPIC bonus: 4,000 Points!",3,0);
+						txt_flash ("Special EPIC bonus: 4,000 Points!",3,0);
 						snd_play (3,snd_getkey);
 						}
 					else {
@@ -1281,7 +1299,7 @@ int msg_bonus (int n, int msg, int z) {
 						if (invcount(inv_fire)<9) addinv (inv_fire);
 						};
 					kindscore[pobj->objkind]=1000;
-					txt ("You now have 5 FIREBALLS--Use them wisely",3,0);
+					txt_flash ("You now have 5 FIREBALLS--Use them wisely",3,0);
 					snd_play (3,snd_gettoken); break;
 				default:	kindscore[pobj->objkind]=25; snd_play (3,snd_bonus);
 				};

@@ -183,6 +183,7 @@ void dolevelsong (void);
 
 void dotextmsg (int n, int flg);
 void txt (char *msg, int col, int flg);
+void txt_flash (char *msg, int col, int flg);
 void wait (void);
 void dialogmsg (int n, int flg);			// for dialog with hero and eagle
 

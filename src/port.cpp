@@ -583,7 +583,7 @@ void fillAudioBuffer(void *udata, Uint8 *stream, int len)
 						::opl.song_pos += 2;
 						break;
 				}
-				::opl.delay_remaining = nextDelay * (44100/512) / 1000;
+				::opl.delay_remaining = nextDelay * (44100/512) / 1000;  // SEB - set to 44kHz
 				if (::opl.song_pos >= ::opl.song_len) ::opl.song_pos = 0; // loop
 			}
 #endif
@@ -601,7 +601,7 @@ void fillAudioBuffer(void *udata, Uint8 *stream, int len)
 	// Play the next bit of the sound effect if needed
 	if (::sound.len > 0) {
 		// Take U8 sound at any rate, convert to S16 48kHz and mix with music
-		double ratio = sound.samplerate / 44100.0;
+		double ratio = sound.samplerate / 44100.0;  //SEB - set to 44kHz
 		for (int i = 0; i < bufvalid_samples; i++) {
 			int j = ::sound.pos + (int)(i * ratio);
 			if (j >= ::sound.len) break;
@@ -638,7 +638,7 @@ void StartWorx(void)
 	::opl.mutex = SDL_CreateMutex();
 
 	SDL_AudioSpec wanted;
-	wanted.freq = 44100;
+	wanted.freq = 44100;  // SEB - set to 44kHz
 	wanted.format = AUDIO_S16;
 	wanted.channels = 2;
 	wanted.samples = 2048;
@@ -652,11 +652,11 @@ void StartWorx(void)
 
 	::opl.sh = new SampleHandler();
 	::opl.chip = new DBOPL::Handler();
-	::opl.chip->Init(44100);
+	::opl.chip->Init(44100);  // SEB - set to 44kHz
 	SDL_PauseAudio(0);
 
 	//Hide mouse...
-	SDL_ShowCursor(SDL_DISABLE);
+	SDL_ShowCursor(SDL_DISABLE);  // SEB - Hide mouse cursor
 
 	return;
 }

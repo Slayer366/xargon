@@ -144,6 +144,8 @@ getNextEvent:
 	if (SDL_PollEvent(&event)) {
 		//key=k_read();
 		//if ((key==0)|(key==1)|(key==2)) key=k_read();
+		//int newkey, newscan = 0;
+		// SEB (newkey was potentially uninitialized)
 		int newkey = 0, newscan = 0;
 		switch (event.type) {
 			case SDL_KEYUP:
@@ -203,6 +205,8 @@ getNextEvent:
 		};
 	k_status();
 	fire1=k_shift;
+	//fire2=k_alt|k_ctrl;
+	// SEB
 	fire2=k_alt|k_ctrl|keydown[0][scan_ctrl];
 	if (((dx1==0)&&(dy1==0))&&(joyflag)) {
 		readjoy (&x1,&y1);
@@ -307,7 +311,7 @@ void macrecend (void) {
 	int machand;
 
 	if (!macrecord) return;
-	machand=_creat (macfname,0644);
+	machand=_creat (macfname,0644);  // SEB (was macfname,0)
 	if (machand>=0) {
 		if ( _write (machand,macptr,macofs) ) {};
 		_close (machand);

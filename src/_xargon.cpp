@@ -76,6 +76,8 @@ char newlevel [16];
 char curlevel [16];
 char oursong [16];
 
+static bool botmsg_flash=false;
+
 char hiname [hilen][numhighs];
 char savename [numsaves][savelen];
 uint32_t hiscore [numhighs];
@@ -195,6 +197,17 @@ void txt (char *msg, int col, int flg) {
 	strncpy(botmsg, msg, sizeof(botmsg)-1);
 	botmsg[sizeof(botmsg)-1] = '\0';
 	botcol=col;
+	botmsg_flash=false;
+	if (!flg) bottime=100;
+	text_flg=flg;
+	statmodflg|=mod_screen;
+	};
+
+void txt_flash (char *msg, int col, int flg) {
+	strncpy(botmsg, msg, sizeof(botmsg)-1);
+	botmsg[sizeof(botmsg)-1] = '\0';
+	botcol=col;
+	botmsg_flash=true;
 	if (!flg) bottime=100;
 	text_flg=flg;
 	statmodflg|=mod_screen;
@@ -202,7 +215,18 @@ void txt (char *msg, int col, int flg) {
 
 void upd_botmsg (void) {
 	if (bottime>0) bottime--;
-	if ((bottime==0)&&(text_flg==0)) txt (v_msg,4,1);
+	if (botmsg_flash == true && bottime > 0) {
+		if ((gamecount & 2) == 0) {
+			botcol = 7;   // white
+		} else {
+			botcol = 12;   // red
+			}
+		statmodflg |= mod_screen;
+		}
+	if ((bottime==0)&&(text_flg==0)) {
+		botmsg_flash=false;
+		txt (v_msg,4,1);
+		}
 	};
 
 void drawstats(void) {
@@ -296,7 +320,7 @@ void loadcfg (void) {
 void savecfg (void) {
 	int cfgfile;
 
-	cfgfile=_creat (cfgfname,0644);
+	cfgfile=_creat (cfgfname,0644);  // SEB (was cfgname,0)
 	if (cfgfile>=0) {
 		if ( write (cfgfile,&hiname,sizeof (hiname)) ) {};
 		if ( write (cfgfile,&hiscore,sizeof(hiscore)) ) {};
@@ -386,7 +410,7 @@ void saveboard (char *fname) {
 	snprintf(dest, sizeof(dest), "%s%s", fname,
          	(strcmp(fname, tempname) != 0) ? ext : "");
 
-	boardfile=_creat (dest, 0644);				// Was O_BINARY
+	boardfile=_creat (dest, 0644);				// Was O_BINARY  // SEB (was dest, 0)
 	if (boardfile<0) rexit(20);
 	if (write (boardfile,&bd,sizeof(bd))<0) rexit(5);
 	if ( write (boardfile,&numobjs,sizeof(numobjs)) ) {};
@@ -488,7 +512,7 @@ void savegame (void) {
 		winput (&menu_win.inside,28,20+num*10,2,s,9);
 	if ((key!=escape) && (strlen(s) == 0)) {
 		strcpy(s, "SAVE");  // default if nothing entered
-		char tmp[16]; itoa(num, tmp, 10); // add # to entry name
+		char tmp[16]; itoa(num + 1, tmp, 10); // add # to entry name
 		strcat(s, tmp);
 		}
 		if ((key!=escape)/*&&(strlen(s)!=0)*/) {
@@ -539,6 +563,9 @@ int getline (int n, char *line, int dospace) {
 	char ch;
 
 	while ((a<n)&&(c<textmsglen)) a+=(*(textmsg+c++))==13;
+	//while ((*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
+	//if ((*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
+	// SEB
 	while ((c<textmsglen)&&(*(textmsg+c)<32)&&(*(textmsg+c)!=13)) c++;
 	if ((c<textmsglen)&&(*(textmsg+c)>='0')&&(*(textmsg+c)<='7')) {
 		ourcolor=*(textmsg+c++)-'0';
@@ -831,6 +858,9 @@ void printhi (int newhi) {
 	for (c=0; c<numhighs; c++) wprint (&hiwin.inside,8,20+c*7,2,hiname[c]);
 	fontcolor (&hiwin.inside,2,-1);
 	for (c=0; c<numhighs; c++) {
+		//wprint (&hiwin.inside,120-(strlen(s)*6),20+c*7,2,
+		//ultoa (hiscore[c],s,10));
+		// SEB
 		ultoa (hiscore[c],s,10);
 		wprint (&hiwin.inside,120-(strlen(s)*6),20+c*7,2,s);
 		};

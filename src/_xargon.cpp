@@ -649,6 +649,7 @@ void dotextmsg (int n, int flg) {
 			fire1off=1;
 			do checkctrl0(1); while ((dx1!=0)||(dy1!=0)||(key!=0));
 			ourdelay();
+			SDL_EnableKeyRepeat(300, 50);
 			do {
 				checkctrl0(0);
 				dx1+=(key==k_pgdown)-(key==k_pgup);
@@ -666,6 +667,7 @@ void dotextmsg (int n, int flg) {
 				} while ((key!=' ')&&(key!=enter)&&(key!=escape)&&(!fire1));
 			setpagemode(1);
 			};
+		SDL_EnableKeyRepeat(0, 0);
 		moddrawboard();
 		free (textmsg);
 		key=0;

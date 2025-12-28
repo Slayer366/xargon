@@ -1,6 +1,9 @@
 //		MUSIC.H Generalized sound driver - header
 //		Copyright 1991 Epic MegaGames, Written by Tim Sweeney
 
+#ifndef	_music_h_
+#define	_music_h_
+
 #include <stdint.h>
 
 #define num_samps 50
@@ -43,3 +46,5 @@ void sb_playtune (char *fname);
 void sb_shutup (void);
 void sb_update (void);
 int sb_playing (void);
+
+#endif // _music_h_

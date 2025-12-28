@@ -1,5 +1,9 @@
 // Xargon Header
 
+#ifndef	_xargon_h_
+#define	_xargon_h_
+
+
 #define boardxs 128
 #define boardys 64
 #define normxs 21
@@ -296,3 +300,6 @@ void initvolume(void);
 #define s6r          735
 #define qzap1        852
 #define qzap3        854
+
+
+#endif // _xargon_h_

@@ -1,5 +1,8 @@
 //	Keyboard.H
 
+#ifndef	_keyboard_h_
+#define	_keyboard_h_
+
 extern char k_rshift, k_lshift, k_shift, k_ctrl, k_alt, k_numlock;
 extern unsigned char keydown[2][256];
 
@@ -137,3 +140,5 @@ scan_UNKNOWN2=$56;
 scan_F11=$57;
 scan_F12=$58;
 */
+
+#endif //	_keyboard_h_

@@ -1,5 +1,8 @@
 //	Gamectrl Header
 
+#ifndef	_gamectrl_h_
+#define	_gamectrl_h_
+
 extern int dx1, dy1, fire1, fire2, fire1off, fire2off;
 extern int joyxl, joyxc, joyxr, joyyu, joyyc, joyyd;
 extern int joyflag;
@@ -27,3 +30,5 @@ extern int macrecord;
 extern int macplay;
 extern int macabort;
 extern int macaborted;
+
+#endif // _gamectrl_h_

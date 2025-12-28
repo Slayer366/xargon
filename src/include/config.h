@@ -1,3 +1,6 @@
+#ifndef	_config_h_
+#define	_config_h_
+
 typedef struct {
 	int firstthru;									// Are we set up?
 	int joyflag0,joyxl0, joyxc0, joyxr0, joyyu0, joyyc0, joyyd0;
@@ -15,3 +18,5 @@ void cfg_init(int argc, char *argv[]);
 int doconfig (void);
 extern int nosnd;
 // extern int cfgdemo;
+
+#endif // _config_h_

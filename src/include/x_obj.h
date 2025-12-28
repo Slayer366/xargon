@@ -100,4 +100,5 @@ extern int first_fruit;
 extern int first_platform;
 extern int first_box;
 
-#endif
+
+#endif // _x_obj_h_

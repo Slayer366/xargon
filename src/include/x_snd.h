@@ -1,5 +1,9 @@
 // Definitions for sound effects
 
+#ifndef	_x_snd_h_
+#define	_x_snd_h_
+
+
 #define snd_menu 1					// menu
 #define snd_jump 2					// jump
 #define snd_land 3					// land
@@ -58,3 +62,5 @@
 	0,0,0,0,0,0,0,0,0,0,\
 	0,0,0,0,0,0,0,0,0,0}
 	*/
+
+#endif // _x_snd_h_

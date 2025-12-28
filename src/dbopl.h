@@ -16,6 +16,11 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+
+#ifndef DBOPL_H
+#define DBOPL_H
+
+
 #include "adlib.h"
 #include "dosbox.h"
 
@@ -255,3 +260,6 @@ struct Handler : public Adlib::Handler {
 
 
 };		//Namespace
+
+
+#endif // DBOPL_H

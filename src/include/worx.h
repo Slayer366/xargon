@@ -5,6 +5,9 @@
  *   All rights reserved.                    * 
  *********************************************/
 
+#ifndef	_worx_h_
+#define	_worx_h_
+
 #include "../port.h"
 #ifdef __cplusplus
 extern "C" {
@@ -91,3 +94,5 @@ int PolyCellStatus(int cell);
 }
 #endif
 
+
+#endif // _worx_h_

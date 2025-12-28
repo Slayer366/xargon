@@ -1,5 +1,8 @@
 //	Win.H:  Window header file
 
+#ifndef	_windows_h_
+#define	_windows_h_
+
 //	Flags
 #define dialog 1
 #define textbox 2
@@ -27,3 +30,5 @@ extern void clearvp (vptype *vp);
 extern void fontcolor (vptype *vp,int hi,int back);
 
 extern void titlewin (wintype *win,char *text,int flg);
+
+#endif // _windows_h_

@@ -1,5 +1,8 @@
 //	GR.H:  Header of data types for shapes
 
+#ifndef	_gr_h_
+#define	_gr_h_
+
 #include "../port.h"
 
 void setcolor (int c, int n1, int n2, int n3);
@@ -99,3 +102,5 @@ void ldrawsh_vga (vptype *vp, int draw_x, int draw_y, int sh_xlb, int sh_yl,
 void pixaddr_cga (int x, int y, char **vidbuf, unsigned char *bitc);
 void pixaddr_ega (int x, int y, char **vidbuf, unsigned char *bitc);
 void pixaddr_vga (int x, int y, char **vidbuf, unsigned char *bitc);
+
+#endif // _gr_h_

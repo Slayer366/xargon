@@ -492,6 +492,10 @@ int loadgame (void) {
 		strcpy (boardname,"save_");
 		strcat (boardname,tempstr);
 		loadboard (boardname);
+		first_emerald = 0;
+		first_fruit=0;
+		first_platform=0;
+		first_box = 0;
 		return (1);
 		};
 	return (0);
@@ -1255,11 +1259,11 @@ void play (int demoflg) {
 	dolevelsong();
 	enable();
 //SEB hack => force full refresh to avoid smal glitch at start map
-        setpagemode(1);
-        drawstats();
-        drawboard();
-        pageflip(); setpagemode(0);
-        setpagemode(1);
+        //setpagemode(1);
+        //drawstats();
+        //drawboard();
+        //pageflip(); setpagemode(0);
+        //setpagemode(1);
         moddrawboard();
 //SEB end of hack
 

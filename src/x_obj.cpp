@@ -2280,7 +2280,7 @@ int msg_front (int n, int msg, int z) {
 						sendtrig (pobj->counter,msg_trigger,n);
 						snd_play (5,snd_enemykill1); killobj (n);
 						objs[0].state=st_stand;
-						txt ("BEWARE MALVINEOUS! XARGON IS VERY CLOSE!",3,0);
+						txt ("BEWARE, MALVINEOUS! XARGON IS VERY CLOSE!",3,0);
 						}; mod1=0;
 				};
 			}; return (mod1);

@@ -1,5 +1,9 @@
 // Definitions for game objects
 
+#ifndef	_x_obj_h_
+#define	_x_obj_h_
+
+
 #define obj_player     0
 #define obj_killme     1
 #define obj_heroswim   2
@@ -90,3 +94,10 @@
 #define obj_map        88
 
 #define numobjkinds    89
+
+extern int first_emerald;
+extern int first_fruit;
+extern int first_platform;
+extern int first_box;
+
+#endif

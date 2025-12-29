@@ -658,6 +658,9 @@ void StartWorx(void)
 	//Hide mouse...
 	SDL_ShowCursor(SDL_DISABLE);  // SEB - Hide mouse cursor
 
+	//Enable keyrepeat...
+	SDL_EnableKeyRepeat(300, 50);
+
 	return;
 }
 

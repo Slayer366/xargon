@@ -461,7 +461,6 @@ int loadsavewin (char *msg, char *blankmsg) {
 	for (c=0; c<11; c++)	wprint (&menu_win.inside,4,20+c*6,2," ");
 	drawwinthrottle = 0;
 
-	SDL_EnableKeyRepeat(300, 50);
 	do {
 		tempstr[1]=0;
 		checkctrl0(0);
@@ -477,8 +476,8 @@ int loadsavewin (char *msg, char *blankmsg) {
 			cur=(max(0,min(cur,numsaves-1)));
 			};
 		} while ((!fire1)&&(key!=enter)&&(key!=escape));
-	if (key==escape) {snd_play (4,snd_masher); SDL_EnableKeyRepeat(0, 0); return (-1);};
-	snd_play (4,snd_masher); SDL_EnableKeyRepeat(0, 0); return (cur);
+	if (key==escape) {snd_play (4,snd_masher); return (-1);};
+	snd_play (4,snd_masher); return (cur);
 	};
 
 int loadgame (void) {
@@ -654,7 +653,6 @@ void dotextmsg (int n, int flg) {
 			fire1off=1;
 			do checkctrl0(1); while ((dx1!=0)||(dy1!=0)||(key!=0));
 			ourdelay();
-			SDL_EnableKeyRepeat(300, 50);
 			do {
 				checkctrl0(0);
 				dx1+=(key==k_pgdown)-(key==k_pgup);
@@ -672,7 +670,6 @@ void dotextmsg (int n, int flg) {
 				} while ((key!=' ')&&(key!=enter)&&(key!=escape)&&(!fire1));
 			setpagemode(1);
 			};
-		SDL_EnableKeyRepeat(0, 0);
 		moddrawboard();
 		free (textmsg);
 		key=0;

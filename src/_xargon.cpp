@@ -131,6 +131,7 @@ void upd_colors (void) {
 		q=236+(((c+gamecount)&7)/2);
 		setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
 		};
+		flush_staged_palette_changes();
 	};
 
 void init_win (void) {

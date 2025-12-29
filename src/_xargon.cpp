@@ -889,7 +889,7 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 	wintype menuwin;
 	int count=0;
 	int gotkey,c,moveclock=0;
-	//int democlock;
+	int democlock;
 	int cur=0;
 	int oldcur=1;
 	char line [80];
@@ -907,7 +907,7 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 		wprint (&menuwin.inside,82+(cur>=y0)*textx0,78,2,soundf?"ON":"OFF");
 		}
 	setpagemode(1);
-	//democlock=getclock();
+	democlock=getclock();
 	for (cur=numlines()-1; cur>=0; cur--) {
 		fontcolor (&menuwin.inside,getline (cur,line,0),-1);
 		if (menuflag==1) {
@@ -943,13 +943,13 @@ int domenu (char *menutext, char *keytab, int y0, int num, int demoflag,
 			cur+=dx1+dy1;
 			if ((cur>=0)&&(cur<(num))) snd_play (4,snd_jump);
 			cur=min (num-1,max (0,cur));
-			//democlock=(getclock());
+			democlock=(getclock());
 			};
 
-//		if ((((getclock())-democlock)>300)&&demoflag) {
-//			key='D';
-//			return (key);
-//			};
+		if ((((getclock())-democlock)>850)&&demoflag) {
+			key='D';
+			return (key);
+			};
 
 		gotkey=0;
 		if ((key==escape)&&demoflag) key='E';
@@ -1399,6 +1399,13 @@ void play (int demoflg) {
 		upd_botmsg();
 		refresh(pagemode);
 		purgeobjs();
+
+		// Since demo still falls out of sync, we'll end the demo if/when Mal dies
+		if (demoflg && objs[0].state == st_die) {
+			gameover = 1;
+			break;
+			}
+
 		if (o_col==1) {init_colors(); o_col=0;};
 
 		if ((demoflg)&&(!macplay)) gameover=1;

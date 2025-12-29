@@ -45,22 +45,27 @@ void cfg_init(int argc, char *argv[]) {
 //		cputs (" /NOSND (If all else fails)\r\n");
 
 	readspeed();
-	for (c=0; c<argc; c++) {
-		strupr (argv[c]);
+	//for (c=0; c<argc; c++) {
+	for (c=1; c<argc; c++) {
+		//Don't want proccess name to be in CAPS in Linux
+		//strupr (argv[c]);
 		if (!strcmp (argv[c],"/TEST")) {
 			ltoa (systime,s,10);
 			cputs (s);
 			getkey();
 			}
 		else if (!strcmp (argv[c],"/NOSB")) {
-			vocflag=0; musicflag=0;
+			vocflag=0;
+			musicflag=0;
 			}
 		else if (!strcmp (argv[c],"/SB")) {
 			}
 		else if (!strcmp(argv[c],"/NOSND")) {
-			vocflag=0; musicflag=0; nosnd=1;
+			vocflag=0;
+			musicflag=0;
+			nosnd=1;
 			};
-//		else if (!strcmp(argv[c],"/DEMO")) cfgdemo=1;
+			//else if (!strcmp(argv[c],"/DEMO")) cfgdemo=1;
 		};
 	};
 

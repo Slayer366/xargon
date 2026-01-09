@@ -103,13 +103,14 @@ void rexit2 (int n);
 void init_colors (void) {
 	int c;
 
-	setcolor (250,0,0,0); flush_staged_palette_changes(); setcolor (251,0,0,0); flush_staged_palette_changes();
+	setcolor (250,0,0,0); setcolor (251,0,0,0);
 	for (c=207; c<234; c++) {				// reset hero colors
 		setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-		}; flush_staged_palette_changes();
+		};
 	for (c=162; c<168; c++) {				// reset laser colors
 		setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
 		};
+		flush_staged_palette_changes();
 	};
 
 void upd_colors (void) {
@@ -288,7 +289,8 @@ void drawstats(void) {
 		setcolor (0,0,0,0); flush_staged_palette_changes();
 		for (c=207; c<234; c++) {				// change hero colors to normal
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-			}; flush_staged_palette_changes();
+			};
+			flush_staged_palette_changes();
 		};
 	};
 
@@ -321,7 +323,7 @@ void loadcfg (void) {
 void savecfg (void) {
 	int cfgfile;
 
-	cfgfile=_creat (cfgfname,0644);  // SEB (was cfgname,0)
+	cfgfile=_creat (cfgfname,0666);  // (was cfgname,0)
 	if (cfgfile>=0) {
 		if ( write (cfgfile,&hiname,sizeof (hiname)) ) {};
 		if ( write (cfgfile,&hiscore,sizeof(hiscore)) ) {};
@@ -698,7 +700,8 @@ void putlevelmsg (int n) {
 		clearvp (&levelwin.inside);
 		for (c=207; c<234; c++) {					// reset hero colors
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-			}; flush_staged_palette_changes();
+			};
+			flush_staged_palette_changes();
 		for (c=0; c<16; c++) {						// draws face
 			drawshape (&levelwin.topleft,0x4000+4*256+c+20,16*(c&3),16*(c/4));
 			};
@@ -739,7 +742,8 @@ void dialogmsg (int n, int flg) {
 		fontcolor (&dialogwin.inside,7,0);
 		for (c=207; c<234; c++) {					// reset hero colors
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],vgapal[c*3+2]);
-			}; flush_staged_palette_changes();
+			};
+			flush_staged_palette_changes();
 		if (flg==0) {
 			for (c=0; c<16; c++) {					// draws hero face
 				drawshape (&dialogwin.topleft,0x4000+4*256+c+20,

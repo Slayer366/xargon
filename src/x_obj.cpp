@@ -823,6 +823,7 @@ int msg_emerald (int n, int msg, int z) {
 //				txt ("EMERALDS CAN BE USED TO BUY ITEMS",7,0);
 				first_emerald=0; dotextmsg (39,0);
 				};
+			if (pl.emeralds==98) txt ("EMERALDS CAN BE USED TO BUY ITEMS",7,0);
 				return (1);
 			};
 			return (0);
@@ -2014,7 +2015,8 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 					if (invcount(inv_invin)) {
 						for (c=207; c<234; c++) {	// change all blue to max
 							setcolor (c,vgapal[c*3+0],vgapal[c*3+1],63);
-							}; flush_staged_palette_changes();
+							};
+							flush_staged_palette_changes();
 						if (pobj->info1++>=30) {
 							pobj->info1=0; takeinv(inv_invin);
 							pl.ouched=-1; statmodflg|=mod_screen;
@@ -2048,38 +2050,43 @@ int msg_effects (int n, int msg, int z) {		// yd FREE
 					for (c=234; c<236; c++) {		// mines, xargbots
 						q=234+(((c+gamecount)&3)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes();
+						};
 					for (c=236; c<240; c++) {		// S.U.P., turret, factory
 						q=236+(((c+gamecount)&7)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes(); break;
+						};
+						flush_staged_palette_changes();
+						break;
 				case 1:									// for underwater only
 					for (c=240; c<248; c++) {		// waterfalls, dungeon
 						q=240+((c+gamecount)&7);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes();
+						};
 					for (c=234; c<236; c++) {		// mines, xargbots
 						q=234+(((c+gamecount)&3)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes();
+						};
 					for (c=236; c<240; c++) {		// S.U.P., turret, factory
 						q=236+(((c+gamecount)&7)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes(); break;
+						};
+						flush_staged_palette_changes();
+						break;
 				case 2:									// levels with lava only
-					flush_staged_palette_changes();
 					for (c=192; c<200; c++) {		// flowing lava
 						q=192+((c+gamecount)&7);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes();
+						};
 					for (c=234; c<236; c++) {		// mines, xargbots
 						q=234+(((c+gamecount)&3)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes();
+						};
 					for (c=236; c<240; c++) {		// S.U.P., turret, factory
 						q=236+(((c+gamecount)&7)/2);
 						setcolor (c,vgapal[q*3+0],vgapal[q*3+1],vgapal[q*3+2]);
-						}; flush_staged_palette_changes(); break;
+						};
+						flush_staged_palette_changes();
+						break;
 				case 3: upd_colors ();				// updates all colors
 				};
 			if (pobj->state==-1) return (0);

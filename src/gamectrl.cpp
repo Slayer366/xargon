@@ -311,7 +311,7 @@ void macrecend (void) {
 	int machand;
 
 	if (!macrecord) return;
-	machand=_creat (macfname,0644);  // SEB (was macfname,0)
+	machand=_creat (macfname,0666);  // (was macfname,0)
 	if (machand>=0) {
 		if ( _write (machand,macptr,macofs) ) {};
 		_close (machand);

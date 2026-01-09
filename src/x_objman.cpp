@@ -124,6 +124,8 @@ void dolevelsong (void) {
 			//strcpy (newlevel,objs[n].inside);		// Level song
 			strncpy(newlevel, objs[n].inside, sizeof(newlevel)-1);
 			newlevel[sizeof(newlevel)-1] = '\0';
+			// Some music tracks were trying to load uppercase
+			for (int i=0; newlevel[i]; i++) newlevel[i] = tolower(newlevel[i]);
 	} else {
 		c=findcheckpt(0);
 		if (objs[c].inside) {
@@ -132,6 +134,7 @@ void dolevelsong (void) {
 				//strcpy (newlevel,objs[c].inside);		// Level song
 				strncpy(newlevel, objs[c].inside, sizeof(newlevel)-1);
 				newlevel[sizeof(newlevel)-1] = '\0';
+				for (int i=0; newlevel[i]; i++) newlevel[i] = tolower(newlevel[i]);
 				}
 			}
 		};
@@ -398,9 +401,12 @@ void refresh (int pgmode) {
 	if (pl.ouched>=2) {
 		for (c=207; c<234; c++) {				// change all red to max
 			setcolor (c,63,vgapal[c*3+1],vgapal[c*3+2]);
-			flush_staged_palette_changes();
+			if (c==208 || c==233) flush_staged_palette_changes();
 			};
-		setcolor (0,63,0,0); flush_staged_palette_changes(); pl.ouched--; statmodflg|=mod_screen;
+		setcolor (0,63,0,0);
+		flush_staged_palette_changes();
+		pl.ouched--;
+		statmodflg|=mod_screen;
 		}
 	else if (pl.ouched<=-2) {
 //		for (c=207; c<234; c++) {				// change all green to max
@@ -408,9 +414,10 @@ void refresh (int pgmode) {
 //			};
 		for (c=207; c<234; c++) {				// change all blue to max
 			setcolor (c,vgapal[c*3+0],vgapal[c*3+1],63);
-			flush_staged_palette_changes();
+			if (c==208 || c==233) flush_staged_palette_changes();
 			};
-		pl.ouched++; statmodflg|=mod_screen;
+		pl.ouched++;
+		statmodflg|=mod_screen;
 		};
 	};
 

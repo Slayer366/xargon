@@ -77,6 +77,7 @@ char curlevel [16];
 char oursong [16];
 
 static bool botmsg_flash=false;
+static bool botmsg_flash_slow = false;
 
 char hiname [hilen][numhighs];
 char savename [numsaves][savelen];
@@ -200,6 +201,7 @@ void txt (char *msg, int col, int flg) {
 	botmsg[sizeof(botmsg)-1] = '\0';
 	botcol=col;
 	botmsg_flash=false;
+	botmsg_flash_slow = false;
 	if (!flg) bottime=100;
 	text_flg=flg;
 	statmodflg|=mod_screen;
@@ -210,6 +212,18 @@ void txt_flash (char *msg, int col, int flg) {
 	botmsg[sizeof(botmsg)-1] = '\0';
 	botcol=col;
 	botmsg_flash=true;
+	botmsg_flash_slow = false;
+	if (!flg) bottime=100;
+	text_flg=flg;
+	statmodflg|=mod_screen;
+	};
+
+void txt_flash_slow (char *msg, int col, int flg) {
+	strncpy(botmsg, msg, sizeof(botmsg)-1);
+	botmsg[sizeof(botmsg)-1] = '\0';
+	botcol=col;
+	botmsg_flash=false;
+	botmsg_flash_slow = true;
 	if (!flg) bottime=100;
 	text_flg=flg;
 	statmodflg|=mod_screen;
@@ -225,8 +239,17 @@ void upd_botmsg (void) {
 			}
 		statmodflg |= mod_screen;
 		}
+	if (botmsg_flash_slow == true && bottime > 0) {
+		if ((gamecount & 4) == 0) {
+			botcol = 7;   // white
+		} else {
+			botcol = 12;   // red
+			}
+		statmodflg |= mod_screen;
+		}
 	if ((bottime==0)&&(text_flg==0)) {
 		botmsg_flash=false;
+		botmsg_flash_slow=false;
 		txt (v_msg,4,1);
 		}
 	};

@@ -290,32 +290,52 @@ int msg_blob (int n, int msg, int z) {		// SLIMER
 	const int rtab[8]={8,9,10,11,7,6,5,4};
 	objtype *pobj; pobj=&(objs[n]);
 
+	const int MAP_LEFT_EDGE  = 0;          // absolute map left boundary
+	const int MAP_RIGHT_EDGE = (boardxs << 4);  // boardxs*16
+
 	switch (msg) {
 		case msg_update:
 			pobj->counter=(pobj->counter+1)&15;
 			switch (pobj->state) {
-				case 0:
+				case 0:  // crawling
+				{
+                    // Reverse direction if hitting map edge
+					if (pobj->xd < 0 && pobj->x <= MAP_LEFT_EDGE) pobj->xd = -pobj->xd;
+					if (pobj->xd > 0 && pobj->x >= MAP_RIGHT_EDGE) pobj->xd = -pobj->xd;
+
+					// Crawl and maybe randomly turn
 					if ((pobj->counter>=((pobj->xd<0)?0:12))&&
 						(pobj->counter<((pobj->xd<0)?4:16))) {
 						if ((!crawl (n,pobj->xd,0))||(xr_random(40)==0))
 							pobj->xd=-pobj->xd;
 						};
+                    // Jump logic: only start jump if there’s space
 					if (xr_random(50)==0) {
 						if (pobj->xd<0) {
-							if (!(standfloor (n,-78,0))) return (0);
-							pobj->state=1; pobj->x-=23;
-							snd_play (2,snd_blob);
+							if (pobj->x - 78 < MAP_LEFT_EDGE) {
+								pobj->xd = -pobj->xd; // reverse instead of jumping off map
+							} else if (standfloor(n,-78,0)) {
+								pobj->state=1; pobj->x-=23;
+								snd_play (2,snd_blob);
+								pobj->xl=52; pobj->yl=28;
+								pobj->y-=15;
+								pobj->counter=0;
 							}
-						else {
-							if (!(standfloor (n,+78,0))) return (0);
+						} else {
+							if (pobj->x+78 > MAP_RIGHT_EDGE) {
+								pobj->xd = -pobj->xd; // reverse instead of jumping off map
+							} else if (standfloor (n,+78,0)) {
 							pobj->state=2; pobj->x+=2;
 							snd_play (2,snd_blob);
-							};
 						pobj->xl=52; pobj->yl=28;
 						pobj->y-=15;
 						pobj->counter=0;
-						};	return (1);
-				case 1:
+							};
+						}
+					}
+					return (1);
+				}
+				case 1:  // jump left
 					if (pobj->counter==8) pobj->x-=52;
 					if (pobj->counter>14) {
 						pobj->xl=30; pobj->yl=13;
@@ -323,15 +343,17 @@ int msg_blob (int n, int msg, int z) {		// SLIMER
 						pobj->counter=0;
 						pobj->state=0;
 						};	return (1);
-				case 2:
+				case 2:  // jump right
 					if (pobj->counter==8) pobj->x+=52;
 					if (pobj->counter>14) {
 						pobj->xl=30; pobj->yl=13;
 						pobj->y+=15; pobj->x+=23;
 						pobj->counter=12;
 						pobj->state=0;
-						};
-				}; return (1);
+					}
+				return (1);
+			}
+			return (1);
 		case msg_draw:
 			switch (pobj->state) {
 				case 0: sh+=blobtab[pobj->counter/2]; break;
@@ -340,7 +362,8 @@ int msg_blob (int n, int msg, int z) {		// SLIMER
 				};
 			drawshape (&gamevp,sh,pobj->x,pobj->y); break;
 		case msg_touch: if (z==0) {hitplayer (n,0); return (1);};
-		}; return (0);
+		};
+		return (0);
 	};
 
 int msg_lizard (int n, int msg, int z) {		// LIZARD

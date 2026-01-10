@@ -173,7 +173,7 @@ void shm_do (void) {
 		if (!shm_want[c]) {
 	// This shape file exists, but not needed now.  Purge it from memory
 			if (shm_tbladdr[c]!=NULL) {
-//PORT				free (shm_tbladdr[c]);
+				free (shm_tbladdr[c]);
 				shm_tbladdr[c]=NULL;
 				};
 			}
@@ -190,10 +190,10 @@ void shm_do (void) {
 	for (c=0; c<shm_maxtbls; c++) {
 		if (shaddr[c]!=NULL) {
 			xlate_table (c,shaddr[c], bucket1);
-//PORT			free (shaddr[c]);
+			free (shaddr[c]);
 			};
 		};
-//PORT	free (bucket1);
+	free (bucket1);
 	};
 
 void shm_exit (void) {

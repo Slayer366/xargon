@@ -619,8 +619,9 @@ void fillAudioBuffer(void *udata, Uint8 *stream, int len)
 
 // Cache a loaded music file so we don't have to reconvert it on each song change
 typedef struct {
-	char name[13];
+	char *name;
 	uint8_t *data;
+	size_t len;
 } music_file;
 
 std::vector<music_file> music_data;
@@ -671,6 +672,7 @@ void CloseWorx(void)
 	// Release any CMF files that were loaded
 	for (std::vector<music_file>::iterator i = ::music_data.begin(); i != ::music_data.end(); i++) {
 		delete[] i->data;
+		free(i->name);
 	}
 	SDL_Quit();
 
@@ -752,11 +754,15 @@ char *GetSequence(char *f_name)
 	pMusicOutType->write(pss, suppData, pMusic, gm::MusicType::Default);
 
 	music_file cmf;
-	strcpy(cmf.name, f_name);
+	//strcpy(cmf.name, f_name);
+	cmf.name = strdup(f_name);
 	std::string imfdata = *pss->str();
-	int len = imfdata.length();
-	cmf.data = new uint8_t[len];
-	memcpy(cmf.data, imfdata.data(), len);
+	//int len = imfdata.length();
+	cmf.len = imfdata.length();
+	//cmf.data = new uint8_t[len];
+	cmf.data = new uint8_t[cmf.len];
+	//memcpy(cmf.data, imfdata.data(), len);
+	memcpy(cmf.data, imfdata.data(), cmf.len);
 	::music_data.push_back(cmf);
 	//printf("Loaded CMF file %s\n", cmf.name);
 	return (char *)cmf.data;

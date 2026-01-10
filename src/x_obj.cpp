@@ -1979,7 +1979,7 @@ int msg_transpad (int n, int msg, int z) {
 					txt ("Press the UP arrow key to walk through doors",7,0);
 					}
 				else if ((pobj->xd==2)&&(pobj->state==0)) {
-					txt ("Press the UP arrow key to go to the other side",3,0);
+					txt_flash_slow ("Press the UP arrow key to go to the other side",7,0);
 					};
 				if ((dy1<0)||(pobj->xd==1)) {
 					snd_play (2,snd_switchon);

@@ -201,7 +201,7 @@ int msg_alien (int n, int msg, int z) {		// SNATCHER
 		}; return (0);
 	};
 
-int msg_leech (int n, int msg, int z) {
+int msg_leech (int n, int msg, int z) { 	// FANGIPEDE
 	int sh=kindtable[obj_leech]*256;
 	objtype *pobj; pobj=&(objs[n]);
 

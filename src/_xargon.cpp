@@ -378,6 +378,11 @@ void loadboard (char *fname) {
 	snprintf(dest, sizeof(dest), "%s%s", fname,
          	(strcmp(fname, tempname) != 0) ? ext : "");
 
+	// A later level in Episode 3 was attempting to load in uppercase
+	for (char *p = dest; *p; ++p) {
+		*p = tolower((unsigned char)*p);
+	}
+
 	strcpy (curlevel,fname);
 	zapobjs ();
 	for (c=162; c<168; c++) {					// reset laser colors
@@ -385,6 +390,10 @@ void loadboard (char *fname) {
 		};
 
 	boardfile=_open (dest,O_BINARY);
+	if (boardfile < 0) {
+		printf("loadboard: failed to open '%s'\n", dest);
+		rexit(99);
+	}
 	if (!read (boardfile,&bd,sizeof(bd))) rexit(1);
 	if (!read (boardfile,&numobjs,sizeof(numobjs))) rexit(2);
 	for (int i = 0; i < numobjs; i++) {
